@@ -53,12 +53,16 @@ export function TransactionsPage() {
   const category = searchParams.get("category") ?? "";
   const specificity = searchParams.get("specificity") ?? "";
   const tagIds = searchParams.get("tag_ids") ?? "";
+  const dateFrom = searchParams.get("date_from") ?? "";
+  const dateTo = searchParams.get("date_to") ?? "";
 
   const filters = {
     search: searchParams.get("search") ?? undefined,
     category: category || undefined,
     specificity: specificity || undefined,
     tag_ids: tagIds || undefined,
+    date_from: dateFrom || undefined,
+    date_to: dateTo || undefined,
     page,
     per_page: perPage,
     sort_by: searchParams.get("sort_by") ?? "date",
@@ -101,6 +105,7 @@ export function TransactionsPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["transactions"] });
       qc.invalidateQueries({ queryKey: ["balance"] });
+      qc.invalidateQueries({ queryKey: ["analytics"] });
     },
   });
 
@@ -110,6 +115,7 @@ export function TransactionsPage() {
       setEditing(res.data);
       setSheetOpen(true);
       qc.invalidateQueries({ queryKey: ["transactions"] });
+      qc.invalidateQueries({ queryKey: ["analytics"] });
     },
   });
 
@@ -253,7 +259,11 @@ export function TransactionsPage() {
   const rows = data?.data ?? [];
   const meta = data?.meta;
   const activeFilters =
-    Number(!!category) + Number(!!specificity) + Number(!!tagIds) + Number(!!filters.search);
+    Number(!!category) +
+    Number(!!specificity) +
+    Number(!!tagIds) +
+    Number(!!filters.search) +
+    Number(!!dateFrom || !!dateTo);
 
   return (
     <div className="space-y-6">
@@ -341,6 +351,25 @@ export function TransactionsPage() {
             onChange={(v) => updateFilter("tag_ids", v)}
             className="w-52"
           />
+          {(dateFrom || dateTo) && (
+            <button
+              type="button"
+              className="pill-filter pill-filter-active flex items-center gap-1"
+              onClick={() => {
+                const next = new URLSearchParams(searchParams);
+                next.delete("date_from");
+                next.delete("date_to");
+                setSearchParams(next);
+              }}
+              title="Сбросить период"
+            >
+              {formatDate(dateFrom || dateTo)}
+              {dateFrom && dateTo && dateFrom !== dateTo
+                ? ` – ${formatDate(dateTo)}`
+                : ""}
+              {" ×"}
+            </button>
+          )}
           <Select
             value={String(perPage)}
             onValueChange={(v) => updateFilter("per_page", v)}
@@ -429,6 +458,7 @@ export function TransactionsPage() {
         onSaved={() => {
           qc.invalidateQueries({ queryKey: ["transactions"] });
           qc.invalidateQueries({ queryKey: ["balance"] });
+          qc.invalidateQueries({ queryKey: ["analytics"] });
           setEditing(null);
         }}
       />

@@ -1,5 +1,7 @@
 import type {
   Balance,
+  CalendarLevel,
+  CalendarResponse,
   CreateTransactionInput,
   PaginatedMeta,
   Tag,
@@ -15,6 +17,8 @@ export type TransactionFilters = {
   category?: string;
   specificity?: string;
   tag_ids?: string;
+  date_from?: string;
+  date_to?: string;
   page?: number;
   per_page?: number;
   sort_by?: string;
@@ -123,4 +127,18 @@ export function logout() {
 
 export function fetchMe() {
   return apiClient<DataResponse<AuthUser>>("/api/v1/auth/me");
+}
+
+export function fetchExpensesCalendar(
+  level: CalendarLevel,
+  year: number,
+  month?: number,
+) {
+  const params = new URLSearchParams({ level, year: String(year) });
+  if (level === "day" && month !== undefined) {
+    params.set("month", String(month));
+  }
+  return apiClient<DataResponse<CalendarResponse>>(
+    `/api/v1/analytics/expenses-calendar?${params.toString()}`,
+  );
 }

@@ -48,3 +48,41 @@ export type CreateTransactionInput = {
   comment?: string | null;
   url?: string | null;
 };
+
+export type CalendarLevel = "day" | "month";
+
+export type CalendarTagBreakdown = {
+  tag_id: number;
+  name: string;
+  color: string;
+  amount: number;
+  percent: number;
+};
+
+export type CalendarTransactionBrief = {
+  id: number;
+  title: string;
+  amount: number;
+};
+
+export type CalendarItem = {
+  key: string;
+  amount: number;
+  has_data: boolean;
+  is_current: boolean;
+  breakdown_by_tag?: CalendarTagBreakdown[];
+  transactions?: CalendarTransactionBrief[];
+};
+
+export type CalendarPeriod = {
+  year: number;
+  month?: number;
+};
+
+export type CalendarResponse = {
+  level: CalendarLevel;
+  period: CalendarPeriod;
+  total: number;
+  has_previous: boolean;
+  items: CalendarItem[];
+};
