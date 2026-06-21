@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowLeftRight,
-  BarChart3,
   CalendarClock,
   LogOut,
   PiggyBank,
@@ -18,7 +17,6 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { to: "/transactions", label: "Операции", icon: ArrowLeftRight },
   { to: "/tags", label: "Метки", icon: Tags },
-  { to: "/analytics", label: "Аналитика", icon: BarChart3 },
   { to: "/mandatory-payments", label: "План", icon: CalendarClock },
   { to: "/planned-expenses", label: "Расходы", icon: PiggyBank },
 ];

@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { TransactionFormSheet } from "@/features/transactions/components/TransactionFormSheet";
 import { BalanceHero } from "@/features/balance/components/BalanceHero";
+import { ExpensesCalendar } from "@/features/analytics/components/ExpensesCalendar";
 import {
   deleteTransaction,
   duplicateTransaction,
@@ -286,8 +287,10 @@ export function TransactionsPage() {
         </Button>
       </div>
 
-      <div className="surface-card p-5 space-y-4">
-        <div className="flex flex-wrap gap-2 items-center">
+      <ExpensesCalendar />
+
+      <div className="surface-card p-4 space-y-2">
+        <div className="flex flex-wrap gap-1.5 items-center">
           {[
             { key: "category", value: "", label: "Все" },
             { key: "category", value: "expense", label: "Расходы" },
@@ -307,9 +310,9 @@ export function TransactionsPage() {
               {pill.label}
             </button>
           ))}
-        </div>
 
-        <div className="flex flex-wrap gap-2 items-center">
+          <span className="w-px h-5 bg-border mx-1" />
+
           {[
             { value: "", label: "Все" },
             { value: "required", label: "Обязательные" },
@@ -331,7 +334,7 @@ export function TransactionsPage() {
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-3 items-center">
+        <div className="flex flex-wrap gap-2 items-center">
           <Input
             placeholder="Поиск по названию…"
             className="max-w-xs rounded-xl border-0 bg-muted/50"
