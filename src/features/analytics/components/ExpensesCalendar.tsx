@@ -20,6 +20,7 @@ const MONTH_SHORT = [
 
 const POPUP_HALF_WIDTH = 128;
 const VIEWPORT_MARGIN = 8;
+const BAR_AREA_HEIGHT = 96;
 
 function dayLabel(key: string): { num: string; weekday: string } {
   const date = new Date(key + "T00:00:00");
@@ -30,6 +31,10 @@ function dayLabel(key: string): { num: string; weekday: string } {
   return { num, weekday: weekday[0].toUpperCase() + weekday.slice(1) };
 }
 
+function getDow(key: string): number {
+  return new Date(key + "T00:00:00").getDay();
+}
+
 export function ExpensesCalendar() {
   const now = new Date();
   const [level, setLevel] = useState<CalendarLevel>("day");
@@ -37,6 +42,7 @@ export function ExpensesCalendar() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const [popupStyle, setPopupStyle] = useState<CSSProperties>({});
+  const [popupArrow, setPopupArrow] = useState(POPUP_HALF_WIDTH);
   const [pickerOpen, setPickerOpen] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
@@ -66,7 +72,7 @@ export function ExpensesCalendar() {
   }, [activeKey, pickerOpen]);
 
   if (isLoading || !data) {
-    return <div className="surface-card p-5 h-72 animate-pulse" />;
+    return <div className="surface-card p-5 h-56 animate-pulse" />;
   }
 
   const items = data.items;
@@ -78,11 +84,20 @@ export function ExpensesCalendar() {
     const containerRect = chartRef.current?.getBoundingClientRect();
     if (!containerRect) return;
     const centerXViewport = colRect.left + colRect.width / 2;
+    const arrowLeftInContainer = centerXViewport - containerRect.left;
     const clampedViewport = Math.min(
       Math.max(centerXViewport, POPUP_HALF_WIDTH + VIEWPORT_MARGIN),
       window.innerWidth - POPUP_HALF_WIDTH - VIEWPORT_MARGIN,
     );
-    setPopupStyle({ left: clampedViewport - containerRect.left, top: 0 });
+    const left = clampedViewport - containerRect.left;
+    const top = containerRect.height + 10;
+    setPopupStyle({ left, top });
+    setPopupArrow(
+      Math.min(
+        Math.max(arrowLeftInContainer - left + POPUP_HALF_WIDTH, 16),
+        POPUP_HALF_WIDTH * 2 - 16,
+      ),
+    );
   }
 
   function handleDayClick(e: MouseEvent<HTMLElement>, item: { key: string; has_data: boolean }) {
@@ -151,7 +166,7 @@ export function ExpensesCalendar() {
         </button>
       )}
 
-      <div ref={chartRef} className="relative flex items-end gap-1 h-56">
+      <div ref={chartRef} className="relative flex items-start gap-1">
         {items.map((item, idx) => {
           const heightPct = item.has_data
             ? Math.max(6, (item.amount / maxAmount) * 100)
@@ -162,10 +177,26 @@ export function ExpensesCalendar() {
             level === "month" ? MONTH_SHORT[idx] : dayLabel(item.key).num;
           const sublabel = level === "day" ? dayLabel(item.key).weekday : "";
 
+          const dow = level === "day" ? getDow(item.key) : null;
+          const isWeekend = dow === 0 || dow === 6;
+          const labelColor = item.is_current
+            ? "text-primary"
+            : isWeekend
+              ? "text-[hsl(var(--expense))]/80"
+              : "text-foreground";
+          const sublabelColor = item.is_current
+            ? "text-primary"
+            : isWeekend
+              ? "text-[hsl(var(--expense))]/70"
+              : "text-muted-foreground";
+
           return (
             <div
               key={item.key}
-              className="flex-1 min-w-0 h-full flex flex-col items-center justify-end"
+              className={cn(
+                "flex-1 min-w-0 flex flex-col items-center",
+                level === "day" && idx > 0 && dow === 1 && "ml-3",
+              )}
               onMouseEnter={(e) => {
                 if (level === "day" && item.has_data) openPopup(e, item.key);
               }}
@@ -173,29 +204,31 @@ export function ExpensesCalendar() {
                 setActiveKey((k) => (k === item.key ? null : k))
               }
             >
-              <button
-                type="button"
-                disabled={!clickable}
-                className={cn(
-                  "w-full rounded-t-md transition-colors",
-                  !item.has_data && "bg-muted-foreground/15 cursor-default",
-                  item.has_data && item.is_current && "bg-primary",
-                  item.has_data && !item.is_current && "bg-muted-foreground/40 hover:bg-primary/60",
-                )}
-                style={{ height: item.has_data ? `${heightPct}%` : "4px" }}
-                onClick={(e) =>
-                  level === "month" ? handleMonthClick(idx) : handleDayClick(e, item)
-                }
-              />
-              <span className="text-[10px] text-muted-foreground mt-1 truncate w-full text-center">
+              <div className="relative w-full" style={{ height: BAR_AREA_HEIGHT }}>
+                <button
+                  type="button"
+                  disabled={!clickable}
+                  className={cn(
+                    "absolute bottom-0 left-1/2 -translate-x-1/2 w-2.5 rounded-full transition-colors",
+                    !item.has_data && "bg-muted-foreground/15 cursor-default",
+                    item.has_data && item.is_current && "bg-primary",
+                    item.has_data && !item.is_current && "bg-muted-foreground/40 hover:bg-primary/60",
+                  )}
+                  style={{ height: item.has_data ? `${heightPct}%` : "6px" }}
+                  onClick={(e) =>
+                    level === "month" ? handleMonthClick(idx) : handleDayClick(e, item)
+                  }
+                />
+              </div>
+              <span className={cn("text-[10px] mt-1.5 truncate w-full text-center", sublabelColor)}>
                 {sublabel}
               </span>
-              <span className="text-[11px] font-medium text-foreground truncate w-full text-center">
+              <span className={cn("text-[11px] font-medium truncate w-full text-center", labelColor)}>
                 {label}
               </span>
 
               {isActive && level === "day" && item.has_data && (
-                <CalendarDayPopup item={item} style={popupStyle} />
+                <CalendarDayPopup item={item} style={popupStyle} arrowLeft={popupArrow} />
               )}
             </div>
           );

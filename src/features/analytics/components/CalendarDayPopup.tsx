@@ -9,9 +9,11 @@ type Mode = "transactions" | "tags";
 export function CalendarDayPopup({
   item,
   style,
+  arrowLeft,
 }: {
   item: CalendarItem;
   style: CSSProperties;
+  arrowLeft?: number;
 }) {
   const [mode, setMode] = useState<Mode>("tags");
   const breakdown = item.breakdown_by_tag ?? [];
@@ -23,6 +25,12 @@ export function CalendarDayPopup({
       style={style}
       onClick={(e) => e.stopPropagation()}
     >
+      {arrowLeft !== undefined && (
+        <span
+          className="absolute -top-1.5 h-3 w-3 rotate-45 border-l border-t bg-card"
+          style={{ left: arrowLeft, marginLeft: -6 }}
+        />
+      )}
       <p className="text-lg font-semibold font-mono">
         {formatKopecks(item.amount)} ₽
       </p>
@@ -34,7 +42,7 @@ export function CalendarDayPopup({
         <button
           type="button"
           className={cn(
-            "pill-filter flex-1 text-center",
+            "pill-filter !px-2.5 !py-1 !text-xs flex-1 text-center",
             mode === "transactions" ? "pill-filter-active" : "pill-filter-inactive",
           )}
           onClick={() => setMode("transactions")}
@@ -44,7 +52,7 @@ export function CalendarDayPopup({
         <button
           type="button"
           className={cn(
-            "pill-filter flex-1 text-center",
+            "pill-filter !px-2.5 !py-1 !text-xs flex-1 text-center",
             mode === "tags" ? "pill-filter-active" : "pill-filter-inactive",
           )}
           onClick={() => setMode("tags")}
