@@ -209,14 +209,18 @@ export function ImportPage() {
           ) : (
             <>
               {errorRows.length > 0 && (
-                <div className="surface-card p-4 space-y-1 text-sm text-destructive">
-                  {errorRows.map((row) =>
-                    Object.entries(row.field_errors).map(([field, message]) => (
-                      <p key={`${row.id}-${field}`}>
-                        Строка {row.row_number}: поле «{field}» {message}
-                      </p>
-                    )),
-                  )}
+                <div className="surface-card p-3 flex items-center gap-2 text-sm text-destructive">
+                  <span className="font-medium">
+                    У вас {errorRows.length}{" "}
+                    {errorRows.length === 1
+                      ? "транзакция с ошибками"
+                      : errorRows.length < 5
+                        ? "транзакции с ошибками"
+                        : "транзакций с ошибками"}
+                  </span>
+                  <span className="text-muted-foreground">
+                    — наведите на выделенное поле чтобы увидеть подробности
+                  </span>
                 </div>
               )}
 

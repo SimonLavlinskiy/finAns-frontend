@@ -12,6 +12,7 @@ type Props = {
   onChange: (tagId: string) => void;
   placeholder?: string;
   className?: string;
+  title?: string;
   /** Скрыть пункт «Все метки» (для формы создания) */
   required?: boolean;
 };
@@ -22,6 +23,7 @@ export function TagFilterPicker({
   onChange,
   placeholder = "Все метки",
   className,
+  title,
   required = false,
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -50,7 +52,15 @@ export function TagFilterPicker({
   useEffect(() => {
     if (open && ref.current) {
       const r = ref.current.getBoundingClientRect();
-      setMenuPos({ top: r.bottom + 4, left: r.left, width: r.width });
+      const menuWidth = Math.max(r.width, 256);
+      const estimatedHeight = 288; // max-h-72
+      const spaceBelow = window.innerHeight - r.bottom;
+      const top =
+        spaceBelow < estimatedHeight && r.top > estimatedHeight
+          ? Math.max(8, r.top - estimatedHeight - 4)
+          : r.bottom + 4;
+      const left = Math.min(r.left, window.innerWidth - menuWidth - 8);
+      setMenuPos({ top, left: Math.max(8, left), width: r.width });
     }
   }, [open]);
 
@@ -99,13 +109,15 @@ export function TagFilterPicker({
   ) : null;
 
   return (
-    <div ref={ref} className={cn("relative", className)}>
+    <div ref={ref} className="relative">
       <Button
         type="button"
         variant="outline"
+        title={title}
         className={cn(
           "w-full rounded-full justify-between font-normal h-10",
           required && !value && "border-destructive/50",
+          className,
         )}
         onClick={() => setOpen((o) => !o)}
       >
@@ -205,10 +217,14 @@ export function TagFormPicker({
   tags,
   value,
   onChange,
+  className,
+  title,
 }: {
   tags: Tag[];
   value: string;
   onChange: (v: string) => void;
+  className?: string;
+  title?: string;
 }) {
   return (
     <TagFilterPicker
@@ -217,6 +233,8 @@ export function TagFormPicker({
       onChange={onChange}
       placeholder="Выберите метку"
       required
+      className={className}
+      title={title}
     />
   );
 }

@@ -94,4 +94,11 @@
   .nav-item-inactive {
     @apply text-muted-foreground hover:bg-accent hover:text-foreground;
   }
+
+  /* Без своей рамки на иконке — иначе она образует второе кольцо рядом с нашей
+     цветной обводкой ошибки/незаполненности у input[type=date]. */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    border-radius: 0.5rem;
+  }
 }

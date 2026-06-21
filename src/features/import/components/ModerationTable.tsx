@@ -22,20 +22,7 @@ import type { UpdateModerationRowInput } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import type { ModerationRow, Tag } from "@/lib/types";
 
-const FIELD_LABELS: Record<string, string> = {
-  title: "Название",
-  amount: "Сумма",
-  date: "Дата",
-  category: "Категория",
-  tag: "Тег",
-  specificity: "Специфика",
-};
-
 function missingFieldsLabel(row: ModerationRow): string | null {
-  if (row.status === "error") {
-    const fields = Object.keys(row.field_errors).map((k) => FIELD_LABELS[k] ?? k);
-    return fields.length ? `Ошибка: ${fields.join(", ")}` : null;
-  }
   if (row.status === "pending") {
     const missing: string[] = [];
     if (!row.tag_id) missing.push("Тег");
@@ -46,7 +33,8 @@ function missingFieldsLabel(row: ModerationRow): string | null {
   return null;
 }
 
-function cellBorderClass(row: ModerationRow, field: string, isEmpty: boolean): string {
+/** Возвращает классы для поля с ошибкой (красный) или незаполненного (жёлтый). */
+function fieldBorderClass(row: ModerationRow, field: string, isEmpty: boolean): string {
   if (row.field_errors[field]) return "border-destructive";
   if (isEmpty) return "border-amber-400";
   return "border-transparent";
@@ -74,21 +62,21 @@ export function ModerationTable({
   onAccept,
 }: Props) {
   return (
-    <div className="surface-card overflow-hidden">
+    <div className="surface-card overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="w-10" />
-            <TableHead>Название</TableHead>
-            <TableHead>Сумма</TableHead>
-            <TableHead>Дата</TableHead>
-            <TableHead>Тег</TableHead>
-            <TableHead>Категория</TableHead>
-            <TableHead>Специфика</TableHead>
-            <TableHead>Комментарий</TableHead>
-            <TableHead>Ссылка</TableHead>
-            <TableHead>Статус</TableHead>
-            <TableHead className="text-right">Действие</TableHead>
+            <TableHead className="min-w-[260px]">Название</TableHead>
+            <TableHead className="min-w-[120px]">Сумма</TableHead>
+            <TableHead className="min-w-[140px]">Дата</TableHead>
+            <TableHead className="min-w-[180px]">Тег</TableHead>
+            <TableHead className="min-w-[130px]">Категория</TableHead>
+            <TableHead className="min-w-[130px]">Специфика</TableHead>
+            <TableHead className="min-w-[140px]">Комментарий</TableHead>
+            <TableHead className="min-w-[140px]">Ссылка</TableHead>
+            <TableHead className="min-w-[90px]">Статус</TableHead>
+            <TableHead className="text-right min-w-[110px]">Действие</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -134,9 +122,8 @@ function ModerationRowView({
   const missing = missingFieldsLabel(row);
 
   return (
-    <TableRow
-      className={cn("transition-opacity duration-700", fading && "opacity-0")}
-    >
+    <TableRow className={cn("transition-opacity duration-700", fading && "opacity-0")}>
+      {/* Чекбокс выбора */}
       <TableCell>
         <input
           type="checkbox"
@@ -145,11 +132,13 @@ function ModerationRowView({
           onChange={() => onToggleSelect(row.id)}
         />
       </TableCell>
+
+      {/* Название — широкое поле, не обрезать */}
       <TableCell>
         <Input
           key={`title-${row.title}`}
           defaultValue={row.title ?? ""}
-          className={cn("h-9 border-2", cellBorderClass(row, "title", !row.title))}
+          className={cn("h-9 min-w-[240px] border-2", fieldBorderClass(row, "title", !row.title))}
           title={row.field_errors.title}
           onBlur={(e) => {
             const v = e.target.value.trim();
@@ -157,14 +146,13 @@ function ModerationRowView({
           }}
         />
       </TableCell>
+
+      {/* Сумма */}
       <TableCell>
         <Input
           key={`amount-${amountStr}`}
           defaultValue={amountStr}
-          className={cn(
-            "h-9 w-28 border-2 font-mono",
-            cellBorderClass(row, "amount", row.amount == null),
-          )}
+          className={cn("h-9 w-28 border-2 font-mono", fieldBorderClass(row, "amount", row.amount == null))}
           title={row.field_errors.amount}
           onBlur={(e) => {
             const v = e.target.value.trim();
@@ -172,13 +160,15 @@ function ModerationRowView({
           }}
         />
       </TableCell>
+
+      {/* Дата */}
       <TableCell>
         <input
           type="date"
           value={row.date ?? ""}
           className={cn(
             "h-9 rounded-xl border-2 bg-card px-2 text-sm",
-            cellBorderClass(row, "date", !row.date),
+            fieldBorderClass(row, "date", !row.date),
           )}
           title={row.field_errors.date}
           onChange={(e) => {
@@ -186,61 +176,59 @@ function ModerationRowView({
           }}
         />
       </TableCell>
+
+      {/* Тег — обводка прямо на кнопке, не на wrapper-div */}
       <TableCell className="min-w-44">
-        <div
-          className={cn(
-            "rounded-xl border-2",
-            cellBorderClass(row, "tag", !row.tag_id),
-          )}
+        <TagFormPicker
+          tags={tags}
+          value={row.tag_id ? String(row.tag_id) : ""}
+          onChange={(v) => {
+            if (v) onPatch(row.id, { tag_id: Number(v) });
+          }}
+          className={cn("border-2", fieldBorderClass(row, "tag", !row.tag_id))}
           title={row.field_errors.tag}
-        >
-          <TagFormPicker
-            tags={tags}
-            value={row.tag_id ? String(row.tag_id) : ""}
-            onChange={(v) => {
-              if (v) onPatch(row.id, { tag_id: Number(v) });
-            }}
-          />
-        </div>
+        />
       </TableCell>
+
+      {/* Категория — portal через Radix, не уходит за экран */}
       <TableCell>
         <Select
           value={row.category ?? ""}
           onValueChange={(v) => onPatch(row.id, { category: v })}
         >
           <SelectTrigger
-            className={cn(
-              "h-9 w-32 border-2",
-              cellBorderClass(row, "category", !row.category),
-            )}
+            className={cn("h-9 w-32 border-2", fieldBorderClass(row, "category", !row.category))}
+            title={row.field_errors.category}
           >
             <SelectValue placeholder="—" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent position="popper" sideOffset={4} avoidCollisions>
             <SelectItem value="expense">Расход</SelectItem>
             <SelectItem value="income">Доход</SelectItem>
           </SelectContent>
         </Select>
       </TableCell>
+
+      {/* Специфика */}
       <TableCell>
         <Select
           value={row.specificity ?? ""}
           onValueChange={(v) => onPatch(row.id, { specificity: v })}
         >
           <SelectTrigger
-            className={cn(
-              "h-9 w-32 border-2",
-              cellBorderClass(row, "specificity", !row.specificity),
-            )}
+            className={cn("h-9 w-32 border-2", fieldBorderClass(row, "specificity", !row.specificity))}
+            title={row.field_errors.specificity}
           >
             <SelectValue placeholder="—" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent position="popper" sideOffset={4} avoidCollisions>
             <SelectItem value="required">Обязательный</SelectItem>
             <SelectItem value="simple">Простой</SelectItem>
           </SelectContent>
         </Select>
       </TableCell>
+
+      {/* Комментарий */}
       <TableCell>
         <Input
           key={`comment-${row.comment}`}
@@ -252,6 +240,8 @@ function ModerationRowView({
           }}
         />
       </TableCell>
+
+      {/* Ссылка */}
       <TableCell>
         <Input
           key={`url-${row.url}`}
@@ -263,6 +253,8 @@ function ModerationRowView({
           }}
         />
       </TableCell>
+
+      {/* Статус */}
       <TableCell>
         <Badge
           variant={
@@ -274,13 +266,11 @@ function ModerationRowView({
           }
           className="rounded-full"
         >
-          {row.status === "ready"
-            ? "Готово"
-            : row.status === "error"
-              ? "Ошибка"
-              : "Ожидает"}
+          {row.status === "ready" ? "Готово" : row.status === "error" ? "Ошибка" : "Ожидает"}
         </Badge>
       </TableCell>
+
+      {/* Принять */}
       <TableCell className="text-right">
         <Button
           size="sm"
