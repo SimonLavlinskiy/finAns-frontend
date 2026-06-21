@@ -10,10 +10,14 @@ export function CalendarDayPopup({
   item,
   style,
   arrowLeft,
+  onMouseEnter,
+  onMouseLeave,
 }: {
   item: CalendarItem;
   style: CSSProperties;
   arrowLeft?: number;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }) {
   const [mode, setMode] = useState<Mode>("tags");
   const breakdown = item.breakdown_by_tag ?? [];
@@ -24,6 +28,8 @@ export function CalendarDayPopup({
       className="absolute z-20 w-64 -translate-x-1/2 rounded-2xl border bg-card p-4 soft-shadow-lg"
       style={style}
       onClick={(e) => e.stopPropagation()}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {arrowLeft !== undefined && (
         <span

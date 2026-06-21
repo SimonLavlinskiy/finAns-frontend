@@ -46,7 +46,24 @@ export function ExpensesCalendar() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
+  const closeTimeoutRef = useRef<number | null>(null);
   const navigate = useNavigate();
+
+  function cancelClose() {
+    if (closeTimeoutRef.current !== null) {
+      window.clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  }
+
+  function scheduleClose(key: string) {
+    cancelClose();
+    closeTimeoutRef.current = window.setTimeout(() => {
+      setActiveKey((k) => (k === key ? null : k));
+    }, 250);
+  }
+
+  useEffect(() => cancelClose, []);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["analytics", "expenses-calendar", level, year, month],
@@ -166,7 +183,7 @@ export function ExpensesCalendar() {
         </button>
       )}
 
-      <div ref={chartRef} className="relative flex items-start gap-1">
+      <div ref={chartRef} className="relative flex items-start gap-1.5">
         {items.map((item, idx) => {
           const heightPct = item.has_data
             ? Math.max(6, (item.amount / maxAmount) * 100)
@@ -198,18 +215,17 @@ export function ExpensesCalendar() {
                 level === "day" && idx > 0 && dow === 1 && "ml-3",
               )}
               onMouseEnter={(e) => {
+                cancelClose();
                 if (level === "day" && item.has_data) openPopup(e, item.key);
               }}
-              onMouseLeave={() =>
-                setActiveKey((k) => (k === item.key ? null : k))
-              }
+              onMouseLeave={() => scheduleClose(item.key)}
             >
               <div className="relative w-full" style={{ height: BAR_AREA_HEIGHT }}>
                 <button
                   type="button"
                   disabled={!clickable}
                   className={cn(
-                    "absolute bottom-0 left-1/2 -translate-x-1/2 w-2.5 rounded-full transition-colors",
+                    "absolute bottom-0 left-1/2 -translate-x-1/2 w-4 rounded-md transition-colors",
                     !item.has_data && "bg-muted-foreground/15 cursor-default",
                     item.has_data && item.is_current && "bg-primary",
                     item.has_data && !item.is_current && "bg-muted-foreground/40 hover:bg-primary/60",
@@ -228,7 +244,13 @@ export function ExpensesCalendar() {
               </span>
 
               {isActive && level === "day" && item.has_data && (
-                <CalendarDayPopup item={item} style={popupStyle} arrowLeft={popupArrow} />
+                <CalendarDayPopup
+                  item={item}
+                  style={popupStyle}
+                  arrowLeft={popupArrow}
+                  onMouseEnter={cancelClose}
+                  onMouseLeave={() => scheduleClose(item.key)}
+                />
               )}
             </div>
           );
