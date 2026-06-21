@@ -1,14 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 export function PlannedExpensesPage() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Планируемые расходы</CardTitle>
-      </CardHeader>
-      <CardContent className="text-muted-foreground">
-        Планируемые траты — в разработке (MVP change).
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <div>
+        <h1 className="page-title">Расходы</h1>
+        <p className="page-subtitle">Планируемые траты</p>
+      </div>
+      <div className="surface-card p-8 text-center text-muted-foreground">
+        Планируемые расходы — в разработке.
+      </div>
+    </div>
   );
 }

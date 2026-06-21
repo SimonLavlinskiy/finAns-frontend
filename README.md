@@ -14,7 +14,7 @@ npm install
 npm run dev
 ```
 
-Откройте http://localhost:5173 — proxy `/api` → backend :8080.
+Откройте http://localhost:5173 — proxy `/api` → backend :8082.
 
 ## Scripts
 
