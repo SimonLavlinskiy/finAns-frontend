@@ -5,6 +5,7 @@ export class ApiError extends Error {
     message: string,
     public status: number,
     public code?: string,
+    public fields?: Record<string, string>,
   ) {
     super(message);
     this.name = "ApiError";
@@ -23,6 +24,7 @@ export async function apiClient<T>(
 
   const response = await fetch(`${API_BASE}${path}`, {
     ...rest,
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...headers,
@@ -31,14 +33,19 @@ export async function apiClient<T>(
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      window.dispatchEvent(new Event("finans:unauthorized"));
+    }
     let message = response.statusText;
     let code: string | undefined;
     try {
       const data = await response.json();
       message = data?.error?.message ?? message;
       code = data?.error?.code;
-    } catch {
-      // ignore parse errors
+      const fields = data?.error?.fields as Record<string, string> | undefined;
+      throw new ApiError(message, response.status, code, fields);
+    } catch (e) {
+      if (e instanceof ApiError) throw e;
     }
     throw new ApiError(message, response.status, code);
   }

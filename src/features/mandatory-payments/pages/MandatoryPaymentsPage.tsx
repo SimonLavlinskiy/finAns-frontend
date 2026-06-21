@@ -1,14 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 export function MandatoryPaymentsPage() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Обязательные платежи</CardTitle>
-      </CardHeader>
-      <CardContent className="text-muted-foreground">
-        Матрица статусов по месяцам — в разработке (MVP change).
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <div>
+        <h1 className="page-title">План</h1>
+        <p className="page-subtitle">Обязательные платежи по месяцам</p>
+      </div>
+      <div className="surface-card p-8 text-center text-muted-foreground">
+        Матрица статусов — в разработке.
+      </div>
+    </div>
   );
 }

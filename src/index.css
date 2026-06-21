@@ -2,26 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Soft fintech: Royal Blue #112250 · Sapphire #3C5070 · фон #F8F9FD */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 228 33% 97%;
+    --foreground: 222 65% 19%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
+    --card-foreground: 222 65% 19%;
+    --primary: 222 65% 19%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 216 30% 34%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 228 25% 94%;
+    --muted-foreground: 216 15% 45%;
+    --accent: 228 40% 96%;
+    --accent-foreground: 222 65% 19%;
+    --destructive: 0 72% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 228 20% 90%;
+    --input: 228 20% 92%;
+    --ring: 222 65% 19%;
+    --radius: 1.25rem;
+    --income: 152 55% 42%;
+    --expense: 0 72% 58%;
+    --hero-from: 222 65% 19%;
+    --hero-to: 216 30% 34%;
   }
 
   * {
@@ -29,7 +34,64 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-family: system-ui, -apple-system, sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .soft-shadow {
+    box-shadow: 0 4px 24px -4px rgba(17, 34, 80, 0.08),
+      0 2px 8px -2px rgba(17, 34, 80, 0.04);
+  }
+
+  .soft-shadow-lg {
+    box-shadow: 0 12px 40px -12px rgba(17, 34, 80, 0.18),
+      0 4px 16px -4px rgba(17, 34, 80, 0.08);
+  }
+
+  .balance-hero {
+    background: linear-gradient(135deg, #112250 0%, #3c5070 55%, #2a3d5c 100%);
+    box-shadow: 0 16px 48px -12px rgba(17, 34, 80, 0.45);
+  }
+
+  .surface-card {
+    @apply bg-card rounded-2xl border-0 soft-shadow;
+  }
+
+  .page-title {
+    @apply text-2xl font-bold tracking-tight text-foreground;
+  }
+
+  .page-subtitle {
+    @apply text-sm text-muted-foreground mt-0.5;
+  }
+
+  .pill-filter {
+    @apply rounded-full px-4 py-2 text-sm font-medium transition-all duration-200;
+  }
+
+  .pill-filter-active {
+    @apply bg-primary text-primary-foreground shadow-md;
+  }
+
+  .pill-filter-inactive {
+    @apply bg-card text-muted-foreground soft-shadow hover:bg-accent;
+  }
+
+  .stat-pill {
+    @apply flex items-center gap-3 rounded-2xl bg-card px-4 py-3 soft-shadow;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200;
+  }
+
+  .nav-item-active {
+    @apply bg-primary text-primary-foreground soft-shadow;
+  }
+
+  .nav-item-inactive {
+    @apply text-muted-foreground hover:bg-accent hover:text-foreground;
   }
 }
