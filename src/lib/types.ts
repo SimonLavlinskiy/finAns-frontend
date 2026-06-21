@@ -130,3 +130,30 @@ export type AcceptedTransaction = {
   comment?: string | null;
   url?: string | null;
 };
+
+export type MandatoryPaymentRecurrence =
+  | "daily"
+  | "weekly"
+  | "monthly"
+  | "quarterly"
+  | "semi_annual"
+  | "yearly";
+
+export type MandatoryPayment = {
+  id: number;
+  title: string;
+  amount: number;
+  tag: { id: number; name: string; color: string; parent?: TagParent };
+  recurrence: MandatoryPaymentRecurrence;
+  next_payment_date: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CreateMandatoryPaymentInput = {
+  title: string;
+  amount: number;
+  tag_id: number;
+  recurrence: MandatoryPaymentRecurrence;
+  next_payment_date: string;
+};

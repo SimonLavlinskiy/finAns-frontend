@@ -3,8 +3,10 @@ import type {
   Balance,
   CalendarLevel,
   CalendarResponse,
+  CreateMandatoryPaymentInput,
   CreateTransactionInput,
   ImportBatchWithRows,
+  MandatoryPayment,
   ModerationRow,
   PaginatedMeta,
   Tag,
@@ -184,6 +186,42 @@ export function closeImportBatch(batchId: number) {
   return apiClient<void>(`/api/v1/import/batches/${batchId}/close`, {
     method: "POST",
   });
+}
+
+export function fetchMandatoryPayments() {
+  return apiClient<DataResponse<MandatoryPayment[]>>("/api/v1/mandatory-payments");
+}
+
+export function createMandatoryPayment(body: CreateMandatoryPaymentInput) {
+  return apiClient<DataResponse<MandatoryPayment>>("/api/v1/mandatory-payments", {
+    method: "POST",
+    body,
+  });
+}
+
+export function updateMandatoryPayment(id: number, body: CreateMandatoryPaymentInput) {
+  return apiClient<DataResponse<MandatoryPayment>>(`/api/v1/mandatory-payments/${id}`, {
+    method: "PUT",
+    body,
+  });
+}
+
+export function deleteMandatoryPayment(id: number) {
+  return apiClient<void>(`/api/v1/mandatory-payments/${id}`, { method: "DELETE" });
+}
+
+export function duplicateMandatoryPayment(id: number) {
+  return apiClient<DataResponse<MandatoryPayment>>(
+    `/api/v1/mandatory-payments/${id}/duplicate`,
+    { method: "POST" },
+  );
+}
+
+export function markMandatoryPaymentPaid(id: number) {
+  return apiClient<DataResponse<MandatoryPayment>>(
+    `/api/v1/mandatory-payments/${id}/mark-paid`,
+    { method: "POST" },
+  );
 }
 
 export function fetchExpensesCalendar(

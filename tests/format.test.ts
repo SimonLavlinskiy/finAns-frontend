@@ -1,6 +1,18 @@
 import { describe, it, expect } from "vitest";
 import { formatKopecks, formatRubles, formatDate, parseRublesInput, rublesToKopecks, relativeDateLabel } from "../src/lib/format";
 
+/** Генерирует дату в локальном времени в формате YYYY-MM-DD со смещением daysOffset от сегодня */
+function localDateStr(daysOffset: number): string {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + daysOffset);
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, "0"),
+    String(d.getDate()).padStart(2, "0"),
+  ].join("-");
+}
+
 describe("formatKopecks", () => {
   it("formats zero", () => {
     expect(formatKopecks(0)).toBe("0,00");
@@ -77,13 +89,10 @@ describe("rublesToKopecks", () => {
 
 describe("relativeDateLabel", () => {
   it("returns 'Сегодня' for today", () => {
-    const today = new Date().toISOString().slice(0, 10);
-    expect(relativeDateLabel(today)).toBe("Сегодня");
+    expect(relativeDateLabel(localDateStr(0))).toBe("Сегодня");
   });
   it("returns 'Вчера' for yesterday", () => {
-    const d = new Date();
-    d.setDate(d.getDate() - 1);
-    expect(relativeDateLabel(d.toISOString().slice(0, 10))).toBe("Вчера");
+    expect(relativeDateLabel(localDateStr(-1))).toBe("Вчера");
   });
   it("returns formatted date for old dates", () => {
     expect(relativeDateLabel("2020-01-15")).toBe("15.01.2020");
