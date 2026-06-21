@@ -57,6 +57,33 @@ export async function apiClient<T>(
   return response.json() as Promise<T>;
 }
 
+export async function apiUpload<T>(path: string, formData: FormData): Promise<T> {
+  const response = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      window.dispatchEvent(new Event("finans:unauthorized"));
+    }
+    let message = response.statusText;
+    let code: string | undefined;
+    try {
+      const data = await response.json();
+      message = data?.error?.message ?? message;
+      code = data?.error?.code;
+      throw new ApiError(message, response.status, code);
+    } catch (e) {
+      if (e instanceof ApiError) throw e;
+    }
+    throw new ApiError(message, response.status, code);
+  }
+
+  return response.json() as Promise<T>;
+}
+
 export type HealthResponse = {
   status: string;
   db: string;

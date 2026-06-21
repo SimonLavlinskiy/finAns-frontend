@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { RequireAuth } from "@/features/auth/RequireAuth";
+import { ImportPage } from "@/features/import/pages/ImportPage";
 import { MandatoryPaymentsPage } from "@/features/mandatory-payments/pages/MandatoryPaymentsPage";
 import { PlannedExpensesPage } from "@/features/planned-expenses/pages/PlannedExpensesPage";
 import { TagsPage } from "@/features/tags/pages/TagsPage";
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/transactions" replace /> },
       { path: "transactions", element: <TransactionsPage /> },
+      { path: "import", element: <ImportPage /> },
       { path: "tags", element: <TagsPage /> },
       { path: "mandatory-payments", element: <MandatoryPaymentsPage /> },
       { path: "planned-expenses", element: <PlannedExpensesPage /> },

@@ -86,3 +86,47 @@ export type CalendarResponse = {
   has_previous: boolean;
   items: CalendarItem[];
 };
+
+export type RowStatus = "pending" | "ready" | "error";
+
+export type ModerationRow = {
+  id: number;
+  batch_id: number;
+  row_number: number;
+  title: string | null;
+  amount: number | null;
+  date: string | null;
+  tag_id: number | null;
+  category: "expense" | "income" | null;
+  specificity: "required" | "simple" | null;
+  comment: string | null;
+  url: string | null;
+  status: RowStatus;
+  field_errors: Record<string, string>;
+};
+
+export type ImportBatch = {
+  id: number;
+  file_name: string;
+  total_rows: number;
+  status: "open" | "closed";
+  created_at: string;
+  closed_at?: string | null;
+};
+
+export type ImportBatchWithRows = {
+  batch: ImportBatch;
+  rows: ModerationRow[];
+};
+
+export type AcceptedTransaction = {
+  id: number;
+  title: string;
+  amount: number;
+  date: string;
+  tag_id: number;
+  category: "expense" | "income";
+  specificity: "required" | "simple";
+  comment?: string | null;
+  url?: string | null;
+};

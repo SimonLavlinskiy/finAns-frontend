@@ -6,6 +6,7 @@ import {
   LogOut,
   PiggyBank,
   Tags,
+  Upload,
 } from "lucide-react";
 import { HealthStatus } from "@/components/HealthStatus";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { to: "/transactions", label: "Операции", icon: ArrowLeftRight },
+  { to: "/import", label: "Импорт", icon: Upload },
   { to: "/tags", label: "Метки", icon: Tags },
   { to: "/mandatory-payments", label: "План", icon: CalendarClock },
   { to: "/planned-expenses", label: "Расходы", icon: PiggyBank },

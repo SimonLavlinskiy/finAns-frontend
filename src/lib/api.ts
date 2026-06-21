@@ -1,13 +1,16 @@
 import type {
+  AcceptedTransaction,
   Balance,
   CalendarLevel,
   CalendarResponse,
   CreateTransactionInput,
+  ImportBatchWithRows,
+  ModerationRow,
   PaginatedMeta,
   Tag,
   Transaction,
 } from "./types";
-import { apiClient } from "./api-client";
+import { apiClient, apiUpload } from "./api-client";
 
 type DataResponse<T> = { data: T };
 type ListResponse<T> = { data: T; meta: PaginatedMeta };
@@ -127,6 +130,60 @@ export function logout() {
 
 export function fetchMe() {
   return apiClient<DataResponse<AuthUser>>("/api/v1/auth/me");
+}
+
+export type UpdateModerationRowInput = Partial<{
+  title: string;
+  amount: string;
+  date: string;
+  tag_id: number;
+  category: string;
+  specificity: string;
+  comment: string;
+  url: string;
+}>;
+
+export function uploadImportBatch(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  return apiUpload<DataResponse<ImportBatchWithRows>>(
+    "/api/v1/import/batches",
+    formData,
+  );
+}
+
+export async function fetchActiveImportBatch() {
+  const res = await apiClient<DataResponse<ImportBatchWithRows> | undefined>(
+    "/api/v1/import/batches/active",
+  );
+  return res ?? null;
+}
+
+export function updateModerationRow(id: number, patch: UpdateModerationRowInput) {
+  return apiClient<DataResponse<ModerationRow>>(`/api/v1/import/rows/${id}`, {
+    method: "PATCH",
+    body: patch,
+  });
+}
+
+export function acceptModerationRow(id: number) {
+  return apiClient<DataResponse<AcceptedTransaction>>(
+    `/api/v1/import/rows/${id}/accept`,
+    { method: "POST" },
+  );
+}
+
+export function acceptModerationBatch(batchId: number, rowIds: number[]) {
+  return apiClient<DataResponse<AcceptedTransaction[]>>(
+    `/api/v1/import/batches/${batchId}/accept`,
+    { method: "POST", body: { row_ids: rowIds } },
+  );
+}
+
+export function closeImportBatch(batchId: number) {
+  return apiClient<void>(`/api/v1/import/batches/${batchId}/close`, {
+    method: "POST",
+  });
 }
 
 export function fetchExpensesCalendar(
