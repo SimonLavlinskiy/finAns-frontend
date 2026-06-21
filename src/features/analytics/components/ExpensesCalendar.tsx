@@ -71,7 +71,6 @@ export function ExpensesCalendar() {
 
   const items = data.items;
   const maxAmount = Math.max(1, ...items.map((i) => i.amount));
-  const activeItem = items.find((i) => i.key === activeKey);
 
   function openPopup(e: MouseEvent<HTMLElement>, key: string) {
     setActiveKey(key);
@@ -157,6 +156,7 @@ export function ExpensesCalendar() {
           const heightPct = item.has_data
             ? Math.max(6, (item.amount / maxAmount) * 100)
             : undefined;
+          const isActive = activeKey === item.key;
           const clickable = level === "month" || item.has_data;
           const label =
             level === "month" ? MONTH_SHORT[idx] : dayLabel(item.key).num;
@@ -193,13 +193,13 @@ export function ExpensesCalendar() {
               <span className="text-[11px] font-medium text-foreground truncate w-full text-center">
                 {label}
               </span>
+
+              {isActive && level === "day" && item.has_data && (
+                <CalendarDayPopup item={item} style={popupStyle} />
+              )}
             </div>
           );
         })}
-
-        {activeItem && level === "day" && activeItem.has_data && (
-          <CalendarDayPopup item={activeItem} style={popupStyle} />
-        )}
       </div>
 
       <div
