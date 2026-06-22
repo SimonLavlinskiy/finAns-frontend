@@ -48,13 +48,14 @@ export function LoginPage() {
           </div>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4" data-testid="login-form">
           <Input
             placeholder="Логин"
             value={loginValue}
             onChange={(e) => setLoginValue(e.target.value)}
             autoComplete="username"
             className="rounded-xl"
+            data-testid="login-input"
           />
           <Input
             type="password"
@@ -63,10 +64,11 @@ export function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
             className="rounded-xl"
+            data-testid="password-input"
           />
 
           {loginMut.isError && (
-            <p className="text-sm text-destructive">
+            <p className="text-sm text-destructive" data-testid="login-error">
               {loginMut.error instanceof ApiError
                 ? loginMut.error.message
                 : "Не удалось войти"}
@@ -77,6 +79,7 @@ export function LoginPage() {
             type="submit"
             className="w-full rounded-full"
             disabled={!loginValue || !password || loginMut.isPending}
+            data-testid="login-submit"
           >
             {loginMut.isPending ? "Входим…" : "Войти"}
           </Button>

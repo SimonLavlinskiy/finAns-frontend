@@ -82,7 +82,7 @@ export function BalanceHero() {
           <div>
             <p className="text-white/70 text-sm font-medium">Текущий баланс</p>
             <div className="flex items-center gap-2 mt-1">
-              <p className="text-3xl md:text-4xl font-bold font-mono tracking-tight">
+              <p className="text-3xl md:text-4xl font-bold font-mono tracking-tight" data-testid="balance-amount">
                 {isLoading ? "…" : `${formatRubles(balance)} ₽`}
               </p>
               <button
@@ -90,6 +90,7 @@ export function BalanceHero() {
                 className="p-1.5 rounded-lg bg-white/10 hover:bg-white/25 transition-colors"
                 onClick={openDialog}
                 title="Изменить баланс"
+                data-testid="btn-edit-balance"
               >
                 <Pencil className="h-3.5 w-3.5 text-white/70" />
               </button>
@@ -169,6 +170,7 @@ export function BalanceHero() {
               onChange={(e) => setAmountInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSave()}
               className="rounded-xl font-mono text-lg border-0 bg-muted/50"
+              data-testid="balance-input"
             />
           </div>
 
@@ -187,13 +189,14 @@ export function BalanceHero() {
           )}
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" className="rounded-xl" onClick={() => setOpen(false)}>
+            <Button variant="outline" className="rounded-xl" onClick={() => setOpen(false)} data-testid="btn-balance-cancel">
               Отмена
             </Button>
             <Button
               className="rounded-xl min-w-[120px]"
               disabled={mutation.isPending || saved}
               onClick={handleSave}
+              data-testid="btn-balance-save"
             >
               {mutation.isPending ? "Сохранение…" : "Сохранить"}
             </Button>

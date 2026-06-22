@@ -54,11 +54,12 @@ export function AppLayout() {
                   <p className="text-xs text-muted-foreground">Финансы</p>
                 </div>
               </div>
-              <nav className="flex flex-col gap-1">
+              <nav className="flex flex-col gap-1" data-testid="sidebar-nav">
                 {navItems.map((item) => (
                   <NavLink
                     key={item.to}
                     to={item.to}
+                    data-testid={`nav-${item.to.replace("/", "")}`}
                     className={({ isActive }) =>
                       cn(
                         "nav-item",
@@ -83,6 +84,7 @@ export function AppLayout() {
                 className="h-8 w-8 rounded-full shrink-0"
                 title="Выйти"
                 onClick={() => logoutMut.mutate()}
+                data-testid="btn-logout"
               >
                 <LogOut className="h-4 w-4" />
               </Button>

@@ -281,6 +281,7 @@ export function TransactionsPage() {
             setEditing(null);
             setSheetOpen(true);
           }}
+          data-testid="btn-add-transaction"
         >
           <Plus className="h-4 w-4 mr-1" />
           Добавить
@@ -339,6 +340,7 @@ export function TransactionsPage() {
             placeholder="Поиск по названию…"
             className="max-w-xs rounded-xl border-0 bg-muted/50"
             value={searchInput}
+            data-testid="tx-search-input"
             onChange={(e) => {
               setSearchInput(e.target.value);
               window.clearTimeout((window as unknown as { _s?: number })._s);

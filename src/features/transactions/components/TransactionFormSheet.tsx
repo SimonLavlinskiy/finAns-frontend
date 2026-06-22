@@ -203,6 +203,7 @@ export function TransactionFormSheet({
               variant={category === "expense" ? "destructive" : "outline"}
               className="flex-1"
               onClick={() => setCategory("expense")}
+              data-testid="btn-category-expense"
             >
               Расход
             </Button>
@@ -211,14 +212,15 @@ export function TransactionFormSheet({
               variant={category === "income" ? "default" : "outline"}
               className={`flex-1 ${category === "income" ? "bg-[hsl(var(--income))] hover:bg-[hsl(var(--income))]/90 text-white" : ""}`}
               onClick={() => setCategory("income")}
+              data-testid="btn-category-income"
             >
               Доход
             </Button>
           </div>
 
-          <Input placeholder="Наименование" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <Input placeholder="Сумма" value={amount} onChange={(e) => setAmount(e.target.value)} />
-          <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          <Input placeholder="Наименование" value={title} onChange={(e) => setTitle(e.target.value)} data-testid="tx-title-input" />
+          <Input placeholder="Сумма" value={amount} onChange={(e) => setAmount(e.target.value)} data-testid="tx-amount-input" />
+          <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} data-testid="tx-date-input" />
 
           <TagFormPicker
             tags={tagsData ?? []}
@@ -240,11 +242,11 @@ export function TransactionFormSheet({
           <Input placeholder="Ссылка (URL)" value={url} onChange={(e) => setUrl(e.target.value)} />
 
           {formError && (
-            <p className="text-sm text-destructive">{formError}</p>
+            <p className="text-sm text-destructive" data-testid="tx-form-error">{formError}</p>
           )}
 
           <div className="flex gap-2 pt-4">
-            <Button className="flex-1" disabled={saveMutation.isPending} onClick={handleSave}>
+            <Button className="flex-1" disabled={saveMutation.isPending} onClick={handleSave} data-testid="btn-save-transaction">
               Сохранить
             </Button>
             {!isEditing(transaction) && (
@@ -252,6 +254,7 @@ export function TransactionFormSheet({
                 variant="outline"
                 disabled={saveMutation.isPending}
                 onClick={handleSaveAndMore}
+                data-testid="btn-save-and-more"
               >
                 Сохранить и ещё
               </Button>

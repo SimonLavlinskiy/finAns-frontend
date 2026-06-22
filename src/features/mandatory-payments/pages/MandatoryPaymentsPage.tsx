@@ -172,6 +172,7 @@ export function MandatoryPaymentsPage() {
             setEditing(null);
             setSheetOpen(true);
           }}
+          data-testid="btn-add-payment"
         >
           + Добавить
         </Button>
