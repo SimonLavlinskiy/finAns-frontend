@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/features/auth/AuthProvider";
 
 type ProvidersProps = {
@@ -21,7 +22,9 @@ export function Providers({ children }: ProvidersProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>{children}</AuthProvider>
+      <TooltipProvider delayDuration={0} skipDelayDuration={0}>
+        <AuthProvider>{children}</AuthProvider>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }

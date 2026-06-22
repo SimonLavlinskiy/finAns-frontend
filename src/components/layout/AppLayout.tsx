@@ -19,7 +19,7 @@ const navItems = [
   { to: "/transactions", label: "Операции", icon: ArrowLeftRight },
   { to: "/import", label: "Импорт", icon: Upload },
   { to: "/tags", label: "Метки", icon: Tags },
-  { to: "/mandatory-payments", label: "План", icon: CalendarClock },
+  { to: "/mandatory-payments", label: "Регулярные платежи", icon: CalendarClock },
   { to: "/planned-expenses", label: "Расходы", icon: PiggyBank },
 ];
 
@@ -50,7 +50,7 @@ export function AppLayout() {
                   fA
                 </div>
                 <div>
-                  <p className="font-bold text-foreground leading-tight">finAns</p>
+                  <p className="font-bold text-foreground leading-tight">finAnns</p>
                   <p className="text-xs text-muted-foreground">Финансы</p>
                 </div>
               </div>
@@ -94,7 +94,7 @@ export function AppLayout() {
           <div className="flex-1 min-w-0 flex flex-col gap-5">
             {/* Mobile header */}
             <header className="flex items-center justify-between gap-3 md:hidden">
-              <p className="font-bold text-lg">finAns</p>
+              <p className="font-bold text-lg">finAnns</p>
               <div className="flex items-center gap-2">
                 <HealthStatus />
                 {!isTransactions && <BalanceHeader />}

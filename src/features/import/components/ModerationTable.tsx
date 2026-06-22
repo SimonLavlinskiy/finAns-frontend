@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,10 +18,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TagFormPicker } from "@/components/TagFilterPicker";
 import type { UpdateModerationRowInput } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import type { ModerationRow, Tag } from "@/lib/types";
+
+/** Оборачивает поле в тултип с описанием ошибки, если она есть. */
+function FieldTooltip({ message, children }: { message?: string; children: ReactNode }) {
+  if (!message) return <>{children}</>;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent>{message}</TooltipContent>
+    </Tooltip>
+  );
+}
 
 function missingFieldsLabel(row: ModerationRow): string | null {
   if (row.status === "pending") {
@@ -135,46 +148,49 @@ function ModerationRowView({
 
       {/* Название — широкое поле, не обрезать */}
       <TableCell>
-        <Input
-          key={`title-${row.title}`}
-          defaultValue={row.title ?? ""}
-          className={cn("h-9 min-w-[240px] border-2", fieldBorderClass(row, "title", !row.title))}
-          title={row.field_errors.title}
-          onBlur={(e) => {
-            const v = e.target.value.trim();
-            if (v && v !== row.title) onPatch(row.id, { title: v });
-          }}
-        />
+        <FieldTooltip message={row.field_errors.title}>
+          <Input
+            key={`title-${row.title}`}
+            defaultValue={row.title ?? ""}
+            className={cn("h-9 min-w-[240px] border-2", fieldBorderClass(row, "title", !row.title))}
+            onBlur={(e) => {
+              const v = e.target.value.trim();
+              if (v && v !== row.title) onPatch(row.id, { title: v });
+            }}
+          />
+        </FieldTooltip>
       </TableCell>
 
       {/* Сумма */}
       <TableCell>
-        <Input
-          key={`amount-${amountStr}`}
-          defaultValue={amountStr}
-          className={cn("h-9 w-28 border-2 font-mono", fieldBorderClass(row, "amount", row.amount == null))}
-          title={row.field_errors.amount}
-          onBlur={(e) => {
-            const v = e.target.value.trim();
-            if (v && v !== amountStr) onPatch(row.id, { amount: v });
-          }}
-        />
+        <FieldTooltip message={row.field_errors.amount}>
+          <Input
+            key={`amount-${amountStr}`}
+            defaultValue={amountStr}
+            className={cn("h-9 w-28 border-2 font-mono", fieldBorderClass(row, "amount", row.amount == null))}
+            onBlur={(e) => {
+              const v = e.target.value.trim();
+              if (v && v !== amountStr) onPatch(row.id, { amount: v });
+            }}
+          />
+        </FieldTooltip>
       </TableCell>
 
       {/* Дата */}
       <TableCell>
-        <input
-          type="date"
-          value={row.date ?? ""}
-          className={cn(
-            "h-9 rounded-xl border-2 bg-card px-2 text-sm",
-            fieldBorderClass(row, "date", !row.date),
-          )}
-          title={row.field_errors.date}
-          onChange={(e) => {
-            if (e.target.value) onPatch(row.id, { date: e.target.value });
-          }}
-        />
+        <FieldTooltip message={row.field_errors.date}>
+          <input
+            type="date"
+            value={row.date ?? ""}
+            className={cn(
+              "h-9 rounded-xl border-2 bg-card px-2 text-sm",
+              fieldBorderClass(row, "date", !row.date),
+            )}
+            onChange={(e) => {
+              if (e.target.value) onPatch(row.id, { date: e.target.value });
+            }}
+          />
+        </FieldTooltip>
       </TableCell>
 
       {/* Тег — обводка прямо на кнопке, не на wrapper-div */}
@@ -192,40 +208,42 @@ function ModerationRowView({
 
       {/* Категория — portal через Radix, не уходит за экран */}
       <TableCell>
-        <Select
-          value={row.category ?? ""}
-          onValueChange={(v) => onPatch(row.id, { category: v })}
-        >
-          <SelectTrigger
-            className={cn("h-9 w-32 border-2", fieldBorderClass(row, "category", !row.category))}
-            title={row.field_errors.category}
+        <FieldTooltip message={row.field_errors.category}>
+          <Select
+            value={row.category ?? ""}
+            onValueChange={(v) => onPatch(row.id, { category: v })}
           >
-            <SelectValue placeholder="—" />
-          </SelectTrigger>
-          <SelectContent position="popper" sideOffset={4} avoidCollisions>
-            <SelectItem value="expense">Расход</SelectItem>
-            <SelectItem value="income">Доход</SelectItem>
-          </SelectContent>
-        </Select>
+            <SelectTrigger
+              className={cn("h-9 w-32 border-2", fieldBorderClass(row, "category", !row.category))}
+            >
+              <SelectValue placeholder="—" />
+            </SelectTrigger>
+            <SelectContent position="popper" sideOffset={4} avoidCollisions>
+              <SelectItem value="expense">Расход</SelectItem>
+              <SelectItem value="income">Доход</SelectItem>
+            </SelectContent>
+          </Select>
+        </FieldTooltip>
       </TableCell>
 
       {/* Специфика */}
       <TableCell>
-        <Select
-          value={row.specificity ?? ""}
-          onValueChange={(v) => onPatch(row.id, { specificity: v })}
-        >
-          <SelectTrigger
-            className={cn("h-9 w-32 border-2", fieldBorderClass(row, "specificity", !row.specificity))}
-            title={row.field_errors.specificity}
+        <FieldTooltip message={row.field_errors.specificity}>
+          <Select
+            value={row.specificity ?? ""}
+            onValueChange={(v) => onPatch(row.id, { specificity: v })}
           >
-            <SelectValue placeholder="—" />
-          </SelectTrigger>
-          <SelectContent position="popper" sideOffset={4} avoidCollisions>
-            <SelectItem value="required">Обязательный</SelectItem>
-            <SelectItem value="simple">Простой</SelectItem>
-          </SelectContent>
-        </Select>
+            <SelectTrigger
+              className={cn("h-9 w-32 border-2", fieldBorderClass(row, "specificity", !row.specificity))}
+            >
+              <SelectValue placeholder="—" />
+            </SelectTrigger>
+            <SelectContent position="popper" sideOffset={4} avoidCollisions>
+              <SelectItem value="required">Обязательный</SelectItem>
+              <SelectItem value="simple">Простой</SelectItem>
+            </SelectContent>
+          </Select>
+        </FieldTooltip>
       </TableCell>
 
       {/* Комментарий */}

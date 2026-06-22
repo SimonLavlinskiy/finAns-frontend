@@ -1,4 +1,4 @@
-/** Палитра finAns — luxury */
+/** Палитра finAnns — luxury */
 export const PALETTE = {
   sapphire: "#3C5070",
   royalBlue: "#112250",

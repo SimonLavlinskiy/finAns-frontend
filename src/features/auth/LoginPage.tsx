@@ -43,7 +43,7 @@ export function LoginPage() {
             fA
           </div>
           <div>
-            <p className="font-bold text-foreground leading-tight">finAns</p>
+            <p className="font-bold text-foreground leading-tight">finAnns</p>
             <p className="text-xs text-muted-foreground">Вход в аккаунт</p>
           </div>
         </div>

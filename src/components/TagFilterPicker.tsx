@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { TagPills } from "@/components/TagPills";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import type { Tag } from "@/lib/types";
 
@@ -108,28 +109,38 @@ export function TagFilterPicker({
     </div>
   ) : null;
 
+  const button = (
+    <Button
+      type="button"
+      variant="outline"
+      className={cn(
+        "w-full rounded-full justify-between font-normal h-10",
+        required && !value && "border-destructive/50",
+        className,
+      )}
+      onClick={() => setOpen((o) => !o)}
+    >
+      <span className="truncate">
+        {value && selected ? (
+          <TagPills tag={selected} size="sm" />
+        ) : (
+          <span className="text-muted-foreground">{placeholder}</span>
+        )}
+      </span>
+      <ChevronDown className="h-4 w-4 ml-2 shrink-0 opacity-50" />
+    </Button>
+  );
+
   return (
     <div ref={ref} className="relative">
-      <Button
-        type="button"
-        variant="outline"
-        title={title}
-        className={cn(
-          "w-full rounded-full justify-between font-normal h-10",
-          required && !value && "border-destructive/50",
-          className,
-        )}
-        onClick={() => setOpen((o) => !o)}
-      >
-        <span className="truncate">
-          {value && selected ? (
-            <TagPills tag={selected} size="sm" />
-          ) : (
-            <span className="text-muted-foreground">{placeholder}</span>
-          )}
-        </span>
-        <ChevronDown className="h-4 w-4 ml-2 shrink-0 opacity-50" />
-      </Button>
+      {title ? (
+        <Tooltip>
+          <TooltipTrigger asChild>{button}</TooltipTrigger>
+          <TooltipContent>{title}</TooltipContent>
+        </Tooltip>
+      ) : (
+        button
+      )}
       {menu && createPortal(menu, document.body)}
     </div>
   );

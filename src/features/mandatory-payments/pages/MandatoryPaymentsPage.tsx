@@ -39,6 +39,8 @@ export function MandatoryPaymentsPage() {
       qc.setQueryData<MandatoryPayment[]>(["mandatory-payments"], (old) =>
         old?.map((p) => (p.id === res.data.id ? res.data : p)) ?? [],
       );
+      qc.invalidateQueries({ queryKey: ["transactions"] });
+      qc.invalidateQueries({ queryKey: ["balance"] });
     },
   });
 
@@ -105,12 +107,15 @@ export function MandatoryPaymentsPage() {
       id: "paid",
       header: "",
       cell: ({ row }) => (
-        <input
-          type="checkbox"
-          checked={false}
-          title="Отметить оплаченным"
-          onChange={() => markPaidMutation.mutate(row.original.id)}
-        />
+        <Button
+          size="sm"
+          variant="outline"
+          className="rounded-xl"
+          disabled={markPaidMutation.isPending}
+          onClick={() => markPaidMutation.mutate(row.original.id)}
+        >
+          Оплачено
+        </Button>
       ),
     },
     {
@@ -158,8 +163,8 @@ export function MandatoryPaymentsPage() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="page-title">Обязательные платежи</h1>
-          <p className="page-subtitle">Регулярные платежи и подписки</p>
+          <h1 className="page-title">Регулярные платежи</h1>
+          <p className="page-subtitle">Обязательные платежи и подписки</p>
         </div>
         <Button
           className="rounded-xl"
