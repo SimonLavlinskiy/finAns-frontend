@@ -4,13 +4,17 @@ import type {
   CalendarLevel,
   CalendarResponse,
   CreateMandatoryPaymentInput,
+  CreatePlannedExpenseInput,
   CreateTransactionInput,
   ImportBatchWithRows,
   MandatoryPayment,
   ModerationRow,
   PaginatedMeta,
+  PlannedExpense,
+  PlannedExpenseCategoryWithItems,
   Tag,
   Transaction,
+  UpdatePlannedExpenseInput,
 } from "./types";
 import { apiClient, apiUpload } from "./api-client";
 
@@ -235,5 +239,49 @@ export function fetchExpensesCalendar(
   }
   return apiClient<DataResponse<CalendarResponse>>(
     `/api/v1/analytics/expenses-calendar?${params.toString()}`,
+  );
+}
+
+export function fetchPlannedExpenseCategories() {
+  return apiClient<DataResponse<PlannedExpenseCategoryWithItems[]>>(
+    "/api/v1/planned-expense-categories",
+  );
+}
+
+export function reorderPlannedExpenseCategories(ids: number[]) {
+  return apiClient<void>("/api/v1/planned-expense-categories/reorder", {
+    method: "PATCH",
+    body: { ids },
+  });
+}
+
+export function createPlannedExpense(payload: CreatePlannedExpenseInput) {
+  return apiClient<DataResponse<PlannedExpense>>("/api/v1/planned-expenses", {
+    method: "POST",
+    body: payload,
+  });
+}
+
+export function updatePlannedExpense(id: number, payload: UpdatePlannedExpenseInput) {
+  return apiClient<DataResponse<PlannedExpense>>(
+    `/api/v1/planned-expenses/${id}`,
+    { method: "PATCH", body: payload },
+  );
+}
+
+export function deletePlannedExpense(id: number) {
+  return apiClient<void>(`/api/v1/planned-expenses/${id}`, { method: "DELETE" });
+}
+
+export function completePlannedExpense(id: number) {
+  return apiClient<DataResponse<PlannedExpense>>(
+    `/api/v1/planned-expenses/${id}/complete`,
+    { method: "POST" },
+  );
+}
+
+export function fetchArchivedPlannedExpenses() {
+  return apiClient<DataResponse<PlannedExpense[]>>(
+    "/api/v1/planned-expenses?status=archived",
   );
 }

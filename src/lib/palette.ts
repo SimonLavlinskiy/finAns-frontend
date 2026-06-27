@@ -45,6 +45,20 @@ export function contrastText(bg: string): string {
   return luminance > 0.62 ? PALETTE.royalBlue : "#FFFFFF";
 }
 
+/** Фиксированная палитра для категорий планируемых расходов — должна совпадать с backend colorutil.CategoryColorPalette */
+export const CATEGORY_COLORS = [
+  "#112250",
+  "#3C5070",
+  "#6B4226",
+  "#8A6D3B",
+  "#4A5D52",
+  "#7D6B91",
+  "#B85C5C",
+  "#E0C68F",
+  "#D9CBC2",
+  "#9FAFA0",
+] as const;
+
 export function resolveTagDisplayColors(
   tag: { color: string; parent?: { color?: string } | null },
   parentColor?: string,

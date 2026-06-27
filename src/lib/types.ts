@@ -157,3 +157,47 @@ export type CreateMandatoryPaymentInput = {
   recurrence: MandatoryPaymentRecurrence;
   next_payment_date: string;
 };
+
+export type PlannedExpenseCategory = {
+  id: number;
+  name: string;
+  color: string;
+  sort_order: number;
+};
+
+export type PlannedExpense = {
+  id: number;
+  category_id: number;
+  title: string;
+  cost_kopecks: number | null;
+  due_date: string | null;
+  url: string | null;
+  priority: "low" | "medium" | "high";
+  effective_priority: "low" | "medium" | "high";
+  is_due_soon: boolean;
+  status: "active" | "archived";
+  created_at: string;
+};
+
+export type PlannedExpenseCategoryWithItems = PlannedExpenseCategory & {
+  items: PlannedExpense[];
+};
+
+export type CreatePlannedExpenseInput = {
+  title: string;
+  cost_kopecks?: number | null;
+  due_date?: string | null;
+  url?: string | null;
+  priority: "low" | "medium" | "high";
+  category_id?: number | null;
+  new_category?: { name: string; color: string } | null;
+};
+
+export type UpdatePlannedExpenseInput = {
+  title?: string;
+  cost_kopecks?: number | null;
+  due_date?: string | null;
+  url?: string | null;
+  priority?: "low" | "medium" | "high";
+  category_id?: number | null;
+};
