@@ -14,6 +14,7 @@ import { TransactionsPage } from "@/features/transactions/pages/TransactionsPage
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
   { path: "/projects", element: <ProjectsPage /> },
+  { path: "/admin/users", element: <AdminUsersPage /> },
   {
     path: "/",
     element: (
@@ -28,7 +29,6 @@ export const router = createBrowserRouter([
       { path: "tags", element: <TagsPage /> },
       { path: "mandatory-payments", element: <MandatoryPaymentsPage /> },
       { path: "planned-expenses", element: <PlannedExpensesPage /> },
-      { path: "admin/users", element: <AdminUsersPage /> },
       { path: "projects/settings", element: <ProjectSettingsPage /> },
     ],
   },

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createUser, fetchUsers } from "@/lib/api";
@@ -7,6 +8,7 @@ import { ApiError } from "@/lib/api-client";
 
 export function AdminUsersPage() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -37,10 +39,19 @@ export function AdminUsersPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="page-title">Пользователи</h1>
-        <p className="page-subtitle">Управление аккаунтами</p>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => navigate("/login")}
+          className="text-sm text-muted-foreground hover:text-foreground"
+        >
+          ← Назад
+        </button>
+        <div>
+          <h1 className="page-title">Пользователи</h1>
+          <p className="page-subtitle">Управление аккаунтами</p>
+        </div>
       </div>
 
       <div className="surface-card p-4 space-y-3">
@@ -87,6 +98,7 @@ export function AdminUsersPage() {
           </table>
         )}
       </div>
+    </div>
     </div>
   );
 }
