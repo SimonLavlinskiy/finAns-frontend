@@ -31,7 +31,7 @@ const navItems = [
   { to: "/tags", label: "Метки", icon: Tags },
   { to: "/mandatory-payments", label: "Регулярные платежи", icon: CalendarClock },
   { to: "/planned-expenses", label: "Хочу купить", icon: PiggyBank },
-  { to: "/admin/users", label: "Пользователи", icon: Users },
+  { to: "/admin/users", label: "Пользователи", icon: Users, adminOnly: true },
   { to: "/projects/settings", label: "Настройки проекта", icon: Settings },
 ];
 
@@ -95,7 +95,7 @@ export function AppLayout() {
               )}
 
               <nav className="flex flex-col gap-1" data-testid="sidebar-nav">
-                {navItems.map((item) => (
+                {navItems.filter((item) => !item.adminOnly || user?.is_admin).map((item) => (
                   <NavLink
                     key={item.to}
                     to={item.to}
