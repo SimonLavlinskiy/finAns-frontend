@@ -11,6 +11,7 @@ export function AdminUsersPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const { data: users, isLoading } = useQuery({
@@ -19,11 +20,12 @@ export function AdminUsersPage() {
   });
 
   const createMut = useMutation({
-    mutationFn: () => createUser({ username: username.trim(), display_name: displayName.trim() }),
+    mutationFn: () => createUser({ username: username.trim(), display_name: displayName.trim(), password: password.trim() }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["users"] });
       setUsername("");
       setDisplayName("");
+      setPassword("");
       setError(null);
     },
     onError: (err: Error) => {
@@ -34,6 +36,7 @@ export function AdminUsersPage() {
   function handleCreate() {
     if (!username.trim()) { setError("Укажите логин"); return; }
     if (!displayName.trim()) { setError("Укажите имя"); return; }
+    if (!password.trim()) { setError("Укажите пароль"); return; }
     setError(null);
     createMut.mutate();
   }
@@ -65,6 +68,12 @@ export function AdminUsersPage() {
           placeholder="Имя (отображаемое)"
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
+        />
+        <Input
+          type="password"
+          placeholder="Пароль"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
         {error && <p className="text-sm text-destructive">{error}</p>}
         <Button onClick={handleCreate} disabled={createMut.isPending}>

@@ -125,11 +125,15 @@ export function fetchSuggestions(q: string) {
   );
 }
 
+export function login(payload: { username: string; password: string }) {
+  return apiClient<DataResponse<User>>("/api/v1/auth/login", { method: "POST", body: payload });
+}
+
 export function fetchUsers() {
   return apiClient<DataResponse<User[]>>("/api/v1/users");
 }
 
-export function createUser(payload: { username: string; display_name: string }) {
+export function createUser(payload: { username: string; display_name: string; password: string }) {
   return apiClient<DataResponse<User>>("/api/v1/users", { method: "POST", body: payload });
 }
 

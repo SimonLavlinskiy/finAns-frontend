@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/features/auth/AuthProvider";
-import { useQuery } from "@tanstack/react-query";
-import { fetchUsers } from "@/lib/api";
+import { login } from "@/lib/api";
+import { ApiError } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -10,28 +10,28 @@ export function LoginPage() {
   const { setUser, user, isLoading } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-
-  const { data: users } = useQuery({
-    queryKey: ["users"],
-    queryFn: async () => (await fetchUsers()).data,
-    staleTime: 60_000,
-  });
+  const [pending, setPending] = useState(false);
 
   if (!isLoading && user) {
     navigate("/projects", { replace: true });
     return null;
   }
 
-  function handleLogin() {
-    const trimmed = username.trim().replace(/^@/, "");
-    const found = users?.find((u) => u.username === trimmed);
-    if (!found) {
-      setError("Пользователь не найден");
-      return;
+  async function handleLogin() {
+    if (!username.trim() || !password) return;
+    setPending(true);
+    setError(null);
+    try {
+      const res = await login({ username: username.trim(), password });
+      setUser(res.data);
+      navigate("/projects", { replace: true });
+    } catch (e) {
+      setError(e instanceof ApiError ? "Неверный логин или пароль" : "Ошибка входа");
+    } finally {
+      setPending(false);
     }
-    setUser(found);
-    navigate("/projects", { replace: true });
   }
 
   function handleKey(e: React.KeyboardEvent) {
@@ -59,8 +59,15 @@ export function LoginPage() {
             onKeyDown={handleKey}
             autoFocus
           />
+          <Input
+            type="password"
+            placeholder="Пароль"
+            value={password}
+            onChange={(e) => { setPassword(e.target.value); setError(null); }}
+            onKeyDown={handleKey}
+          />
           {error && <p className="text-sm text-destructive">{error}</p>}
-          <Button className="w-full" onClick={handleLogin} disabled={isLoading}>
+          <Button className="w-full" onClick={handleLogin} disabled={pending || isLoading}>
             Войти
           </Button>
         </div>
