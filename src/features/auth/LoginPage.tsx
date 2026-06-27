@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
 import { fetchUsers } from "@/lib/api";
-import type { User } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export function LoginPage() {
   const { setUser, user, isLoading } = useAuth();
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const { data: users } = useQuery({
     queryKey: ["users"],
@@ -20,9 +23,19 @@ export function LoginPage() {
     return null;
   }
 
-  function handleSelect(u: User) {
-    setUser(u);
+  function handleLogin() {
+    const trimmed = username.trim().replace(/^@/, "");
+    const found = users?.find((u) => u.username === trimmed);
+    if (!found) {
+      setError("Пользователь не найден");
+      return;
+    }
+    setUser(found);
     navigate("/projects", { replace: true });
+  }
+
+  function handleKey(e: React.KeyboardEvent) {
+    if (e.key === "Enter") handleLogin();
   }
 
   return (
@@ -34,45 +47,23 @@ export function LoginPage() {
           </div>
           <div>
             <p className="font-bold text-foreground leading-tight">finAnns</p>
-            <p className="text-xs text-muted-foreground">Выберите аккаунт</p>
+            <p className="text-xs text-muted-foreground">Войдите в аккаунт</p>
           </div>
         </div>
 
-        {isLoading ? (
-          <div className="py-8 text-center text-sm text-muted-foreground">Загрузка…</div>
-        ) : !users?.length ? (
-          <div className="py-8 text-center text-sm text-muted-foreground">
-            Нет пользователей. Перейдите в{" "}
-            <a href="/admin/users" className="underline">Администрирование</a> и создайте аккаунт.
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {users.map((u) => (
-              <button
-                key={u.id}
-                onClick={() => handleSelect(u)}
-                className={cn(
-                  "w-full flex items-center gap-3 p-3 rounded-xl border border-border",
-                  "hover:bg-accent hover:border-primary transition-colors text-left",
-                )}
-              >
-                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
-                  {u.display_name.charAt(0).toUpperCase()}
-                </div>
-                <div className="min-w-0">
-                  <p className="font-medium text-foreground truncate">{u.display_name}</p>
-                  <p className="text-xs text-muted-foreground">@{u.username}</p>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
-
-        <p className="text-center text-xs text-muted-foreground">
-          <a href="/admin/users" className="hover:underline">
-            + Добавить пользователя
-          </a>
-        </p>
+        <div className="space-y-3">
+          <Input
+            placeholder="Логин"
+            value={username}
+            onChange={(e) => { setUsername(e.target.value); setError(null); }}
+            onKeyDown={handleKey}
+            autoFocus
+          />
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <Button className="w-full" onClick={handleLogin} disabled={isLoading}>
+            Войти
+          </Button>
+        </div>
       </div>
     </div>
   );
