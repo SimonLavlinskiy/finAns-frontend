@@ -99,4 +99,14 @@ describe("sortItemsByPriority", () => {
   it("пустой массив → пустой массив", () => {
     expect(sortItemsByPriority([])).toEqual([]);
   });
+
+  it("undefined → пустой массив, не падает", () => {
+    expect(() => sortItemsByPriority(undefined)).not.toThrow();
+    expect(sortItemsByPriority(undefined)).toEqual([]);
+  });
+
+  it("null → пустой массив, не падает", () => {
+    expect(() => sortItemsByPriority(null)).not.toThrow();
+    expect(sortItemsByPriority(null)).toEqual([]);
+  });
 });

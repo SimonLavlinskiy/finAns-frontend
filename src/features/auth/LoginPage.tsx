@@ -1,89 +1,78 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, type FormEvent } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ApiError } from "@/lib/api-client";
-import { login } from "@/lib/api";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/features/auth/AuthProvider";
+import { useQuery } from "@tanstack/react-query";
+import { fetchUsers } from "@/lib/api";
+import type { User } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 export function LoginPage() {
-  const { user, isLoading } = useAuth();
+  const { setUser, user, isLoading } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const qc = useQueryClient();
 
-  const [loginValue, setLoginValue] = useState("");
-  const [password, setPassword] = useState("");
-
-  const loginMut = useMutation({
-    mutationFn: () => login(loginValue, password),
-    onSuccess: (res) => {
-      qc.setQueryData(["auth", "me"], res.data);
-      const redirectTo =
-        (location.state as { from?: string } | null)?.from ?? "/transactions";
-      navigate(redirectTo, { replace: true });
-    },
+  const { data: users } = useQuery({
+    queryKey: ["users"],
+    queryFn: async () => (await fetchUsers()).data,
+    staleTime: 60_000,
   });
 
   if (!isLoading && user) {
-    return <Navigate to="/transactions" replace />;
+    navigate("/projects", { replace: true });
+    return null;
   }
 
-  function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    loginMut.mutate();
+  function handleSelect(u: User) {
+    setUser(u);
+    navigate("/projects", { replace: true });
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="surface-card w-full max-w-sm p-6">
-        <div className="flex items-center gap-2 mb-6">
+      <div className="surface-card w-full max-w-sm p-6 space-y-6">
+        <div className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
             fA
           </div>
           <div>
             <p className="font-bold text-foreground leading-tight">finAnns</p>
-            <p className="text-xs text-muted-foreground">Вход в аккаунт</p>
+            <p className="text-xs text-muted-foreground">Выберите аккаунт</p>
           </div>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-4" data-testid="login-form">
-          <Input
-            placeholder="Логин"
-            value={loginValue}
-            onChange={(e) => setLoginValue(e.target.value)}
-            autoComplete="username"
-            className="rounded-xl"
-            data-testid="login-input"
-          />
-          <Input
-            type="password"
-            placeholder="Пароль"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            className="rounded-xl"
-            data-testid="password-input"
-          />
+        {isLoading ? (
+          <div className="py-8 text-center text-sm text-muted-foreground">Загрузка…</div>
+        ) : !users?.length ? (
+          <div className="py-8 text-center text-sm text-muted-foreground">
+            Нет пользователей. Перейдите в{" "}
+            <a href="/admin/users" className="underline">Администрирование</a> и создайте аккаунт.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {users.map((u) => (
+              <button
+                key={u.id}
+                onClick={() => handleSelect(u)}
+                className={cn(
+                  "w-full flex items-center gap-3 p-3 rounded-xl border border-border",
+                  "hover:bg-accent hover:border-primary transition-colors text-left",
+                )}
+              >
+                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                  {u.display_name.charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-medium text-foreground truncate">{u.display_name}</p>
+                  <p className="text-xs text-muted-foreground">@{u.username}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
 
-          {loginMut.isError && (
-            <p className="text-sm text-destructive" data-testid="login-error">
-              {loginMut.error instanceof ApiError
-                ? loginMut.error.message
-                : "Не удалось войти"}
-            </p>
-          )}
-
-          <Button
-            type="submit"
-            className="w-full rounded-full"
-            disabled={!loginValue || !password || loginMut.isPending}
-            data-testid="login-submit"
-          >
-            {loginMut.isPending ? "Входим…" : "Войти"}
-          </Button>
-        </form>
+        <p className="text-center text-xs text-muted-foreground">
+          <a href="/admin/users" className="hover:underline">
+            + Добавить пользователя
+          </a>
+        </p>
       </div>
     </div>
   );

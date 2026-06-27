@@ -18,6 +18,7 @@ export const TAG_COLORS = [
 const CHILD_LIGHTEN = 0.4;
 
 export function lightenColor(hex: string, amount = CHILD_LIGHTEN): string {
+  if (!hex) return "#888888";
   const parsed = parseHex(hex);
   if (!parsed) return hex;
   const mix = (c: number) => Math.round(c + (255 - c) * amount);
@@ -26,6 +27,7 @@ export function lightenColor(hex: string, amount = CHILD_LIGHTEN): string {
 }
 
 function parseHex(hex: string): [number, number, number] | null {
+  if (!hex) return null;
   const h = hex.replace("#", "").trim();
   if (h.length !== 6) return null;
   const n = Number.parseInt(h, 16);
@@ -38,6 +40,7 @@ function toHex(n: number): string {
 }
 
 export function contrastText(bg: string): string {
+  if (!bg) return "#FFFFFF";
   const parsed = parseHex(bg);
   if (!parsed) return "#FFFFFF";
   const [r, g, b] = parsed;

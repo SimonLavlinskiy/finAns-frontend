@@ -55,6 +55,9 @@ export function CategoryGrid({ categories, onEdit }: Props) {
 
   const reorderMutation = useMutation({
     mutationFn: (ids: number[]) => reorderPlannedExpenseCategories(ids),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["planned-expense-categories"] });
+    },
     onError: () => {
       qc.invalidateQueries({ queryKey: ["planned-expense-categories"] });
     },
@@ -72,9 +75,9 @@ export function CategoryGrid({ categories, onEdit }: Props) {
     const newIndex = categories.findIndex((c) => c.id === over.id);
     const reordered = arrayMove(categories, oldIndex, newIndex);
 
-    qc.setQueryData<{ data: PlannedExpenseCategoryWithItems[] }>(
+    qc.setQueryData<PlannedExpenseCategoryWithItems[]>(
       ["planned-expense-categories"],
-      (old) => (old ? { ...old, data: reordered } : old),
+      () => reordered,
     );
 
     reorderMutation.mutate(reordered.map((c) => c.id));

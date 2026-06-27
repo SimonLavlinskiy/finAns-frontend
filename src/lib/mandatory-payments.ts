@@ -1,5 +1,13 @@
 export type DateHighlight = "warn" | "normal";
 
+export function isPaidThisPeriod(nextPaymentDate: string): boolean {
+  const now = new Date();
+  const todayStr = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
+    .toISOString()
+    .slice(0, 10);
+  return nextPaymentDate > todayStr;
+}
+
 /**
  * Подсвечивает дату платежа тёплым жёлтым, если до неё ≤3 дней (включая сегодня).
  * Прошедшие даты — обычный цвет.

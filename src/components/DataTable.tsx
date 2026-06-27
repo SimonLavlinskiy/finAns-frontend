@@ -12,13 +12,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  getRowClassName?: (row: TData) => string;
 };
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, getRowClassName }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
@@ -43,7 +45,10 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       <TableBody>
         {table.getRowModel().rows.length ? (
           table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id} className="border-border/40">
+            <TableRow
+              key={row.id}
+              className={cn("border-border/40", getRowClassName?.(row.original))}
+            >
               {row.getVisibleCells().map((cell) => (
                 <TableCell key={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

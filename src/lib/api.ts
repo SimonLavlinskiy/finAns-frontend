@@ -12,9 +12,13 @@ import type {
   PaginatedMeta,
   PlannedExpense,
   PlannedExpenseCategoryWithItems,
+  Project,
+  ProjectMember,
+  ProjectWithMembers,
   Tag,
   Transaction,
   UpdatePlannedExpenseInput,
+  User,
 } from "./types";
 import { apiClient, apiUpload } from "./api-client";
 
@@ -121,21 +125,45 @@ export function fetchSuggestions(q: string) {
   );
 }
 
-export type AuthUser = { login: string };
+export function fetchUsers() {
+  return apiClient<DataResponse<User[]>>("/api/v1/users");
+}
 
-export function login(login: string, password: string) {
-  return apiClient<DataResponse<AuthUser>>("/api/v1/auth/login", {
+export function createUser(payload: { username: string; display_name: string }) {
+  return apiClient<DataResponse<User>>("/api/v1/users", { method: "POST", body: payload });
+}
+
+export function fetchProjects() {
+  return apiClient<DataResponse<Project[]>>("/api/v1/projects");
+}
+
+export function createProject(payload: {
+  name: string;
+  initial_balance_kopecks?: number;
+  started_at?: string | null;
+}) {
+  return apiClient<DataResponse<Project>>("/api/v1/projects", { method: "POST", body: payload });
+}
+
+export function fetchProject(id: number) {
+  return apiClient<DataResponse<ProjectWithMembers>>(`/api/v1/projects/${id}`);
+}
+
+export function fetchProjectMembers(id: number) {
+  return apiClient<DataResponse<ProjectMember[]>>(`/api/v1/projects/${id}/members`);
+}
+
+export function addProjectMember(projectId: number, username: string) {
+  return apiClient<void>(`/api/v1/projects/${projectId}/members`, {
     method: "POST",
-    body: { login, password },
+    body: { username },
   });
 }
 
-export function logout() {
-  return apiClient<void>("/api/v1/auth/logout", { method: "POST" });
-}
-
-export function fetchMe() {
-  return apiClient<DataResponse<AuthUser>>("/api/v1/auth/me");
+export function removeProjectMember(projectId: number, userId: number) {
+  return apiClient<void>(`/api/v1/projects/${projectId}/members/${userId}`, {
+    method: "DELETE",
+  });
 }
 
 export type UpdateModerationRowInput = Partial<{
@@ -244,7 +272,7 @@ export function fetchExpensesCalendar(
 
 export function fetchPlannedExpenseCategories() {
   return apiClient<DataResponse<PlannedExpenseCategoryWithItems[]>>(
-    "/api/v1/planned-expense-categories",
+    "/api/v1/planned-expenses",
   );
 }
 

@@ -19,7 +19,7 @@ import {
   markMandatoryPaymentPaid,
 } from "@/lib/api";
 import { formatKopecks } from "@/lib/format";
-import { getDateHighlight, RECURRENCE_LABELS } from "@/lib/mandatory-payments";
+import { getDateHighlight, isPaidThisPeriod, RECURRENCE_LABELS } from "@/lib/mandatory-payments";
 import { cn } from "@/lib/utils";
 import type { MandatoryPayment } from "@/lib/types";
 
@@ -106,17 +106,28 @@ export function MandatoryPaymentsPage() {
     {
       id: "paid",
       header: "",
-      cell: ({ row }) => (
-        <Button
-          size="sm"
-          variant="outline"
-          className="rounded-xl"
-          disabled={markPaidMutation.isPending}
-          onClick={() => markPaidMutation.mutate(row.original.id)}
-        >
-          Оплачено
-        </Button>
-      ),
+      cell: ({ row }) => {
+        const paid = isPaidThisPeriod(row.original.next_payment_date);
+        return paid ? (
+          <Button
+            size="sm"
+            className="rounded-xl bg-green-500 hover:bg-green-500 text-white cursor-default disabled:opacity-100 disabled:bg-green-500"
+            disabled
+          >
+            ✓ Оплачено
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            className="rounded-xl"
+            disabled={markPaidMutation.isPending}
+            onClick={() => markPaidMutation.mutate(row.original.id)}
+          >
+            Оплатить
+          </Button>
+        );
+      },
     },
     {
       id: "actions",
@@ -196,7 +207,15 @@ export function MandatoryPaymentsPage() {
             </Button>
           </div>
         ) : (
-          <DataTable columns={columns} data={rows} />
+          <DataTable
+            columns={columns}
+            data={rows}
+            getRowClassName={(row) =>
+              isPaidThisPeriod(row.next_payment_date)
+                ? "opacity-60 bg-green-50/40"
+                : ""
+            }
+          />
         )}
       </div>
 

@@ -146,7 +146,7 @@ export function TransactionsPage() {
           return (
             <span
               className={cn(
-                "block text-right font-mono font-medium",
+                "block text-right font-mono font-medium whitespace-nowrap",
                 isExpense ? "text-[hsl(var(--expense))]" : "text-[hsl(var(--income))]",
               )}
             >

@@ -57,8 +57,8 @@ export function PlannedExpensesPage() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="page-title">Расходы</h1>
-          <p className="page-subtitle">Планируемые траты</p>
+          <h1 className="page-title">Хочу купить</h1>
+          <p className="page-subtitle">Планируемые покупки</p>
         </div>
         <Button
           className="rounded-xl gap-1"
@@ -96,14 +96,14 @@ export function PlannedExpensesPage() {
           )}
           {catsError && (
             <div className="py-16 text-center text-muted-foreground">
-              <p className="text-lg mb-2">Не удалось загрузить расходы</p>
+              <p className="text-lg mb-2">Не удалось загрузить список</p>
               <p className="text-sm">Проверьте соединение с сервером</p>
             </div>
           )}
           {!catsLoading && !catsError && categories.length === 0 && (
             <div className="text-center py-16 text-muted-foreground">
               <p className="mb-4 text-lg">Нет категорий</p>
-              <Button onClick={openAdd}>Добавить первый расход</Button>
+              <Button onClick={openAdd}>Добавить желание</Button>
             </div>
           )}
           {!catsLoading && !catsError && categories.length > 0 && (

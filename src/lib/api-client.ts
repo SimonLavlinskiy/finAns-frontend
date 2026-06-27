@@ -1,4 +1,15 @@
+import { getActiveProjectId, getActiveUserId } from "./session";
+
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
+
+function sessionHeaders(): Record<string, string> {
+  const h: Record<string, string> = {};
+  const uid = getActiveUserId();
+  const pid = getActiveProjectId();
+  if (uid !== null) h["X-User-ID"] = String(uid);
+  if (pid !== null) h["X-Project-ID"] = String(pid);
+  return h;
+}
 
 export class ApiError extends Error {
   constructor(
@@ -27,6 +38,7 @@ export async function apiClient<T>(
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+      ...sessionHeaders(),
       ...headers,
     },
     body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -61,6 +73,7 @@ export async function apiUpload<T>(path: string, formData: FormData): Promise<T>
   const response = await fetch(`${API_BASE}${path}`, {
     method: "POST",
     credentials: "include",
+    headers: sessionHeaders(),
     body: formData,
   });
 

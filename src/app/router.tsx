@@ -2,14 +2,18 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { RequireAuth } from "@/features/auth/RequireAuth";
+import { AdminUsersPage } from "@/features/admin/pages/AdminUsersPage";
 import { ImportPage } from "@/features/import/pages/ImportPage";
 import { MandatoryPaymentsPage } from "@/features/mandatory-payments/pages/MandatoryPaymentsPage";
 import { PlannedExpensesPage } from "@/features/planned-expenses/pages/PlannedExpensesPage";
+import { ProjectsPage } from "@/features/projects/pages/ProjectsPage";
+import { ProjectSettingsPage } from "@/features/projects/pages/ProjectSettingsPage";
 import { TagsPage } from "@/features/tags/pages/TagsPage";
 import { TransactionsPage } from "@/features/transactions/pages/TransactionsPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
+  { path: "/projects", element: <ProjectsPage /> },
   {
     path: "/",
     element: (
@@ -24,6 +28,8 @@ export const router = createBrowserRouter([
       { path: "tags", element: <TagsPage /> },
       { path: "mandatory-payments", element: <MandatoryPaymentsPage /> },
       { path: "planned-expenses", element: <PlannedExpensesPage /> },
+      { path: "admin/users", element: <AdminUsersPage /> },
+      { path: "projects/settings", element: <ProjectSettingsPage /> },
     ],
   },
 ]);

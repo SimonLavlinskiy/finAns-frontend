@@ -30,7 +30,8 @@ export function getEffectivePriority(
   return item.priority;
 }
 
-export function sortItemsByPriority(items: PlannedExpense[]): PlannedExpense[] {
+export function sortItemsByPriority(items: PlannedExpense[] | undefined | null): PlannedExpense[] {
+  if (!items) return [];
   return [...items].sort((a, b) => {
     const wa = PRIORITY_SORT_WEIGHT[a.effective_priority] ?? 0;
     const wb = PRIORITY_SORT_WEIGHT[b.effective_priority] ?? 0;

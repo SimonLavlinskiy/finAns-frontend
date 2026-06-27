@@ -30,6 +30,10 @@ describe("lightenColor", () => {
   it("invalid hex passthrough", () => {
     expect(lightenColor("notahex")).toBe("notahex");
   });
+  it("undefined → fallback color, не падает", () => {
+    expect(() => lightenColor(undefined as unknown as string)).not.toThrow();
+    expect(lightenColor(undefined as unknown as string)).toBe("#888888");
+  });
   it("amount 0 → no change", () => {
     const color = PALETTE.royalBlue;
     expect(lightenColor(color, 0)).toBe(color.toLowerCase());
@@ -51,6 +55,10 @@ describe("contrastText", () => {
   });
   it("invalid hex → white text (fallback)", () => {
     expect(contrastText("invalid")).toBe("#FFFFFF");
+  });
+  it("undefined → white text fallback, не падает", () => {
+    expect(() => contrastText(undefined as unknown as string)).not.toThrow();
+    expect(contrastText(undefined as unknown as string)).toBe("#FFFFFF");
   });
 });
 

@@ -3,7 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/features/auth/AuthProvider";
 
 export function RequireAuth({ children }: { children: ReactNode }) {
-  const { user, isLoading } = useAuth();
+  const { user, projectId, isLoading } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -16,6 +16,10 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 
   if (!user) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  }
+
+  if (!projectId) {
+    return <Navigate to="/projects" replace />;
   }
 
   return <>{children}</>;

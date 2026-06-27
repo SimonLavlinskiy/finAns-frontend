@@ -1,3 +1,28 @@
+export type User = {
+  id: number;
+  username: string;
+  display_name: string;
+};
+
+export type ProjectMember = {
+  user_id: number;
+  username: string;
+  display_name: string;
+  role: "owner" | "member";
+};
+
+export type Project = {
+  id: number;
+  name: string;
+  initial_balance_kopecks: number;
+  started_at: string | null;
+  created_at: string;
+};
+
+export type ProjectWithMembers = Project & {
+  members: ProjectMember[];
+};
+
 export type PaginatedMeta = {
   page: number;
   per_page: number;
