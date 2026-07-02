@@ -17,9 +17,10 @@ import {
   duplicateMandatoryPayment,
   fetchMandatoryPayments,
   markMandatoryPaymentPaid,
+  unmarkMandatoryPaymentPaid,
 } from "@/lib/api";
 import { formatKopecks } from "@/lib/format";
-import { getDateHighlight, isPaidThisPeriod, RECURRENCE_LABELS } from "@/lib/mandatory-payments";
+import { getDateHighlight, isCurrentlyPaid, RECURRENCE_LABELS } from "@/lib/mandatory-payments";
 import { cn } from "@/lib/utils";
 import type { MandatoryPayment } from "@/lib/types";
 
@@ -35,6 +36,17 @@ export function MandatoryPaymentsPage() {
 
   const markPaidMutation = useMutation({
     mutationFn: (id: number) => markMandatoryPaymentPaid(id),
+    onSuccess: (res) => {
+      qc.setQueryData<MandatoryPayment[]>(["mandatory-payments"], (old) =>
+        old?.map((p) => (p.id === res.data.id ? res.data : p)) ?? [],
+      );
+      qc.invalidateQueries({ queryKey: ["transactions"] });
+      qc.invalidateQueries({ queryKey: ["balance"] });
+    },
+  });
+
+  const unmarkPaidMutation = useMutation({
+    mutationFn: (id: number) => unmarkMandatoryPaymentPaid(id),
     onSuccess: (res) => {
       qc.setQueryData<MandatoryPayment[]>(["mandatory-payments"], (old) =>
         old?.map((p) => (p.id === res.data.id ? res.data : p)) ?? [],
@@ -107,16 +119,30 @@ export function MandatoryPaymentsPage() {
       id: "paid",
       header: "",
       cell: ({ row }) => {
-        const paid = isPaidThisPeriod(row.original.next_payment_date);
-        return paid ? (
-          <Button
-            size="sm"
-            className="rounded-xl bg-green-500 hover:bg-green-500 text-white cursor-default disabled:opacity-100 disabled:bg-green-500"
-            disabled
-          >
-            ✓ Оплачено
-          </Button>
-        ) : (
+        const paid = isCurrentlyPaid(row.original.last_paid_at);
+        if (paid) {
+          return (
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                className="rounded-xl bg-green-500 hover:bg-green-500 text-white cursor-default disabled:opacity-100 disabled:bg-green-500"
+                disabled
+              >
+                ✓ Оплачено
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="rounded-xl text-destructive hover:text-destructive text-xs"
+                disabled={unmarkPaidMutation.isPending}
+                onClick={() => unmarkPaidMutation.mutate(row.original.id)}
+              >
+                Отменить
+              </Button>
+            </div>
+          );
+        }
+        return (
           <Button
             size="sm"
             variant="outline"
@@ -211,7 +237,7 @@ export function MandatoryPaymentsPage() {
             columns={columns}
             data={rows}
             getRowClassName={(row) =>
-              isPaidThisPeriod(row.next_payment_date)
+              isCurrentlyPaid(row.last_paid_at)
                 ? "opacity-60 bg-green-50/40"
                 : ""
             }

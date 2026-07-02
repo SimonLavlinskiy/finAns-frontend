@@ -172,6 +172,7 @@ export type MandatoryPayment = {
   tag: { id: number; name: string; color: string; parent?: TagParent };
   recurrence: MandatoryPaymentRecurrence;
   next_payment_date: string;
+  last_paid_at: string | null;
   created_at: string;
   updated_at: string;
 };

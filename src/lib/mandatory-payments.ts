@@ -1,11 +1,7 @@
 export type DateHighlight = "warn" | "normal";
 
-export function isPaidThisPeriod(nextPaymentDate: string): boolean {
-  const now = new Date();
-  const todayStr = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
-    .toISOString()
-    .slice(0, 10);
-  return nextPaymentDate > todayStr;
+export function isCurrentlyPaid(lastPaidAt: string | null): boolean {
+  return lastPaidAt != null;
 }
 
 /**

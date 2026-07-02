@@ -20,13 +20,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { TransactionFormSheet } from "@/features/transactions/components/TransactionFormSheet";
 import { BalanceHero } from "@/features/balance/components/BalanceHero";
 import { ExpensesCalendar } from "@/features/analytics/components/ExpensesCalendar";
@@ -166,7 +159,7 @@ export function TransactionsPage() {
       },
       {
         id: "tag",
-        header: "Метка",
+        header: "Категория",
         cell: ({ row }) => {
           const t = row.original.tag;
           return (
@@ -375,19 +368,6 @@ export function TransactionsPage() {
               {" ×"}
             </button>
           )}
-          <Select
-            value={String(perPage)}
-            onValueChange={(v) => updateFilter("per_page", v)}
-          >
-            <SelectTrigger className="w-36 rounded-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="10">10 / стр.</SelectItem>
-              <SelectItem value="25">25 / стр.</SelectItem>
-              <SelectItem value="50">50 / стр.</SelectItem>
-            </SelectContent>
-          </Select>
           {activeFilters > 0 && (
             <Button
               variant="ghost"
@@ -424,7 +404,12 @@ export function TransactionsPage() {
             </Button>
           </div>
         ) : (
-          <DataTable columns={columns} data={rows} />
+          <DataTable
+            columns={columns}
+            data={rows}
+            pageSize={perPage}
+            onPageSizeChange={(n) => updateFilter("per_page", String(n))}
+          />
         )}
       </div>
 

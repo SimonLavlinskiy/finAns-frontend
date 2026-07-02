@@ -127,7 +127,7 @@ export function TransactionFormSheet({
   function validate(): string | null {
     if (!title.trim()) return "Укажите наименование";
     if (!amount.trim() || parseRublesInput(amount) <= 0) return "Укажите сумму";
-    if (!tagId) return "Выберите метку";
+    if (!tagId) return "Выберите категорию";
     if (!date) return "Укажите дату";
     return null;
   }
@@ -270,7 +270,7 @@ function fieldLabel(key: string, value: string): string {
   const labels: Record<string, string> = {
     title: "Наименование",
     amount: "Сумма",
-    tag_id: "Метка",
+    tag_id: "Категория",
     date: "Дата",
     category: "Категория",
     url: "Ссылка",

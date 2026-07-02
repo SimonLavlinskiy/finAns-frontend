@@ -260,6 +260,13 @@ export function markMandatoryPaymentPaid(id: number) {
   );
 }
 
+export function unmarkMandatoryPaymentPaid(id: number) {
+  return apiClient<DataResponse<MandatoryPayment>>(
+    `/api/v1/mandatory-payments/${id}/unmark-paid`,
+    { method: "POST" },
+  );
+}
+
 export function fetchExpensesCalendar(
   level: CalendarLevel,
   year: number,

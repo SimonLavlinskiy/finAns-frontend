@@ -8,7 +8,6 @@ import { MandatoryPaymentsPage } from "@/features/mandatory-payments/pages/Manda
 import { PlannedExpensesPage } from "@/features/planned-expenses/pages/PlannedExpensesPage";
 import { ProjectsPage } from "@/features/projects/pages/ProjectsPage";
 import { ProjectSettingsPage } from "@/features/projects/pages/ProjectSettingsPage";
-import { TagsPage } from "@/features/tags/pages/TagsPage";
 import { TransactionsPage } from "@/features/transactions/pages/TransactionsPage";
 
 export const router = createBrowserRouter([
@@ -26,7 +25,6 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="/transactions" replace /> },
       { path: "transactions", element: <TransactionsPage /> },
       { path: "import", element: <ImportPage /> },
-      { path: "tags", element: <TagsPage /> },
       { path: "mandatory-payments", element: <MandatoryPaymentsPage /> },
       { path: "planned-expenses", element: <PlannedExpensesPage /> },
       { path: "projects/settings", element: <ProjectSettingsPage /> },

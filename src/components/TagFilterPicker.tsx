@@ -22,7 +22,7 @@ export function TagFilterPicker({
   tags,
   value,
   onChange,
-  placeholder = "Все метки",
+  placeholder = "Все категории",
   className,
   title,
   required = false,
@@ -30,13 +30,7 @@ export function TagFilterPicker({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 0 });
-  const [expanded, setExpanded] = useState<Record<number, boolean>>(() => {
-    const init: Record<number, boolean> = {};
-    tags.forEach((t) => {
-      if (t.children?.length) init[t.id] = true;
-    });
-    return init;
-  });
+  const [expanded, setExpanded] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     function onDoc(e: MouseEvent) {
@@ -77,6 +71,7 @@ export function TagFilterPicker({
     <div
       id="tag-picker-menu"
       className="fixed z-[200] bg-card border rounded-2xl shadow-lg p-2 max-h-72 overflow-y-auto pointer-events-auto"
+      onWheel={(e) => { e.currentTarget.scrollTop += e.deltaY; }}
       style={{
         top: menuPos.top,
         left: menuPos.left,
@@ -89,7 +84,7 @@ export function TagFilterPicker({
           className="w-full text-left px-3 py-2 rounded-xl text-sm hover:bg-accent"
           onClick={() => select(null)}
         >
-          Все метки
+          Все категории
         </button>
       )}
       <div className={cn("space-y-0.5", !required && "mt-1")}>
@@ -242,7 +237,7 @@ export function TagFormPicker({
       tags={tags}
       value={value}
       onChange={onChange}
-      placeholder="Выберите метку"
+      placeholder="Выберите категорию"
       required
       className={className}
       title={title}

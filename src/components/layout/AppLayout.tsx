@@ -7,7 +7,6 @@ import {
   LogOut,
   PiggyBank,
   Settings,
-  Tags,
   Upload,
   Users,
 } from "lucide-react";
@@ -28,7 +27,6 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { to: "/transactions", label: "Операции", icon: ArrowLeftRight },
   { to: "/import", label: "Импорт", icon: Upload },
-  { to: "/tags", label: "Метки", icon: Tags },
   { to: "/mandatory-payments", label: "Регулярные платежи", icon: CalendarClock },
   { to: "/planned-expenses", label: "Хочу купить", icon: PiggyBank },
   { to: "/admin/users", label: "Пользователи", icon: Users, adminOnly: true },
