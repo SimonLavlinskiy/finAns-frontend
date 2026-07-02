@@ -183,7 +183,7 @@ export function ExpensesCalendar() {
         </button>
       )}
 
-      <div ref={chartRef} className="relative flex items-start gap-1.5">
+      <div ref={chartRef} className="relative flex items-start gap-1.5 overflow-x-auto md:overflow-visible pb-1 -mx-1 px-1">
         {items.map((item, idx) => {
           const heightPct = item.has_data
             ? Math.max(6, (item.amount / maxAmount) * 100)
@@ -211,7 +211,7 @@ export function ExpensesCalendar() {
             <div
               key={item.key}
               className={cn(
-                "flex-1 min-w-0 flex flex-col items-center",
+                "shrink-0 w-7 md:flex-1 md:w-auto md:min-w-0 flex flex-col items-center",
                 level === "day" && idx > 0 && dow === 1 && "ml-3",
               )}
               onMouseEnter={(e) => {

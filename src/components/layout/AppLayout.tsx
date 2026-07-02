@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -5,6 +6,7 @@ import {
   Building2,
   CalendarClock,
   LogOut,
+  Menu,
   PiggyBank,
   Settings,
   Upload,
@@ -19,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { BalanceHeader } from "@/features/balance/components/BalanceHeader";
 import { fetchProjects } from "@/lib/api";
@@ -36,6 +39,7 @@ const navItems = [
 export function AppLayout() {
   const navigate = useNavigate();
   const { user, projectId, setProjectId, logout } = useAuth();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const { data: projects } = useQuery({
     queryKey: ["projects"],
@@ -46,6 +50,7 @@ export function AppLayout() {
 
   const currentProject = projects?.find((p) => p.id === projectId);
   const showSwitcher = (projects?.length ?? 0) > 1;
+  const visibleNavItems = navItems.filter((item) => !item.adminOnly || user?.is_admin);
 
   function handleLogout() {
     logout();
@@ -93,7 +98,7 @@ export function AppLayout() {
               )}
 
               <nav className="flex flex-col gap-1" data-testid="sidebar-nav">
-                {navItems.filter((item) => !item.adminOnly || user?.is_admin).map((item) => (
+                {visibleNavItems.map((item) => (
                   <NavLink
                     key={item.to}
                     to={item.to}
@@ -137,7 +142,19 @@ export function AppLayout() {
           <div className="flex-1 min-w-0 flex flex-col gap-5">
             {/* Mobile header */}
             <header className="flex items-center justify-between gap-3 md:hidden">
-              <p className="font-bold text-lg">finAnns</p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-full shrink-0"
+                  title="Меню"
+                  onClick={() => setMobileNavOpen(true)}
+                  data-testid="btn-mobile-nav-open"
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+                <p className="font-bold text-lg">finAnns</p>
+              </div>
               <div className="flex items-center gap-2">
                 <HealthStatus />
                 <BalanceHeader />
@@ -152,6 +169,70 @@ export function AppLayout() {
                 </Button>
               </div>
             </header>
+
+            <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+              <SheetContent side="left" className="w-3/4 max-w-xs flex flex-col">
+                <SheetHeader>
+                  <SheetTitle>finAnns</SheetTitle>
+                </SheetHeader>
+
+                {showSwitcher && projects && (
+                  <Select
+                    value={String(projectId)}
+                    onValueChange={(v) => setProjectId(Number(v))}
+                  >
+                    <SelectTrigger className="h-8 text-xs">
+                      <Building2 className="h-3 w-3 mr-1 shrink-0" />
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projects.map((p) => (
+                        <SelectItem key={p.id} value={String(p.id)}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+
+                <nav className="flex flex-col gap-1">
+                  {visibleNavItems.map((item) => (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      onClick={() => setMobileNavOpen(false)}
+                      className={({ isActive }) =>
+                        cn(
+                          "nav-item",
+                          isActive ? "nav-item-active" : "nav-item-inactive",
+                        )
+                      }
+                    >
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      {item.label}
+                    </NavLink>
+                  ))}
+                </nav>
+
+                <div className="mt-auto pt-4 border-t flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">Вы вошли как</p>
+                    <p className="font-medium text-foreground truncate">
+                      {user ? `@${user.username}` : "—"}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full shrink-0"
+                    title="Выйти"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
 
             {/* Desktop top bar */}
             <header className="hidden md:flex items-center justify-end">
