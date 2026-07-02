@@ -14,7 +14,7 @@ export function CategoryCard({ category, onEdit }: Props) {
 
   return (
     <div
-      className="rounded-2xl p-4 flex flex-col gap-2 min-h-[120px]"
+      className="rounded-2xl p-4 flex flex-col gap-2 min-h-[120px] soft-shadow"
       style={{ backgroundColor: category.color }}
     >
       <h3 className="text-sm font-semibold tracking-wide" style={{ color: textColor }}>
@@ -26,7 +26,7 @@ export function CategoryCard({ category, onEdit }: Props) {
           Нет позиций
         </p>
       ) : (
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-1">
           {items.map((item) => (
             <PlannedExpenseRow
               key={item.id}

@@ -106,7 +106,7 @@ export function PlannedExpenseRow({
 
   return (
     <>
-      <div className="group flex items-start gap-2 py-1.5 px-2 rounded-lg hover:bg-black/10 transition-colors">
+      <div className="group flex items-start gap-2 py-1.5 px-2 rounded-lg bg-black/10 hover:bg-black/20 transition-colors">
         <span
           className="mt-1.5 shrink-0 w-2 h-2 rounded-full"
           style={{ backgroundColor: dotColor }}

@@ -154,13 +154,7 @@ export function AppLayout() {
             </header>
 
             {/* Desktop top bar */}
-            <header className="hidden md:flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Добро пожаловать</p>
-                <p className="font-semibold text-foreground">
-                  {user?.display_name ?? "Финансы"}
-                </p>
-              </div>
+            <header className="hidden md:flex items-center justify-end">
               <div className="flex items-center gap-3">
                 <BalanceHeader />
               </div>

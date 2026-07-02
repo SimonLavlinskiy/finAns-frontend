@@ -29,7 +29,7 @@ import {
   fetchTags,
   fetchTransactions,
 } from "@/lib/api";
-import { formatDate, formatKopecks, relativeDateLabel } from "@/lib/format";
+import { formatDate, formatKopecks } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { Transaction } from "@/lib/types";
 
@@ -152,8 +152,8 @@ export function TransactionsPage() {
         accessorKey: "date",
         header: "Дата",
         cell: ({ row }) => (
-          <span className="text-muted-foreground" title={formatDate(row.original.date)}>
-            {relativeDateLabel(row.original.date)}
+          <span className="text-muted-foreground">
+            {formatDate(row.original.date)}
           </span>
         ),
       },

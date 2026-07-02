@@ -226,7 +226,9 @@ export function ExpensesCalendar() {
                   disabled={!clickable}
                   className={cn(
                     "absolute bottom-0 left-1/2 -translate-x-1/2 w-4 rounded-md transition-colors",
-                    !item.has_data && "bg-muted-foreground/15 cursor-default",
+                    !item.has_data && "cursor-default",
+                    !item.has_data && !item.is_current && "bg-muted-foreground/15",
+                    !item.has_data && item.is_current && "bg-primary/40",
                     item.has_data && item.is_current && "bg-primary",
                     item.has_data && !item.is_current && "bg-muted-foreground/40 hover:bg-primary/60",
                   )}

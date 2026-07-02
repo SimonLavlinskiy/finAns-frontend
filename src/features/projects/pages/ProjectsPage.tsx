@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, Plus } from "lucide-react";
+import { Building2, LogOut, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProjectCreateSheet } from "@/features/projects/components/ProjectCreateSheet";
 import { useAuth } from "@/features/auth/AuthProvider";
@@ -9,7 +9,7 @@ import { fetchProjects } from "@/lib/api";
 
 export function ProjectsPage() {
   const navigate = useNavigate();
-  const { user, setProjectId } = useAuth();
+  const { user, setProjectId, logout } = useAuth();
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const { data: projects, isLoading } = useQuery({
@@ -23,19 +23,37 @@ export function ProjectsPage() {
     navigate("/", { replace: true });
   }
 
+  function handleLogout() {
+    logout();
+    navigate("/login", { replace: true });
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="surface-card w-full max-w-md p-6 space-y-6">
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
-            fA
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
+              fA
+            </div>
+            <div>
+              <p className="font-bold text-foreground leading-tight">finAnns</p>
+              <p className="text-xs text-muted-foreground">
+                {user ? `@${user.username}` : "Выберите проект"}
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="font-bold text-foreground leading-tight">finAnns</p>
-            <p className="text-xs text-muted-foreground">
-              {user ? `@${user.username}` : "Выберите проект"}
-            </p>
-          </div>
+          {user && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-full shrink-0"
+              title="Выйти"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          )}
         </div>
 
         <h2 className="text-lg font-semibold">Ваши проекты</h2>
