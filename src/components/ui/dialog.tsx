@@ -23,11 +23,22 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 export const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+>(({ className, children, onOpenAutoFocus, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}
+      tabIndex={-1}
+      onOpenAutoFocus={(e) => {
+        onOpenAutoFocus?.(e);
+        if (e.defaultPrevented) return;
+        // Radix auto-focuses the first focusable descendant, which is
+        // often a text input — that pops the mobile keyboard open
+        // immediately and covers the dialog before the user has even
+        // looked at it. Focus the dialog container itself instead.
+        e.preventDefault();
+        (e.target as HTMLElement)?.focus();
+      }}
       className={cn(
         "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg sm:rounded-lg",
         className,

@@ -27,11 +27,22 @@ export const SheetContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> &
     VariantProps<typeof sheetVariants>
->(({ side = "right", className, children, ...props }, ref) => (
+>(({ side = "right", className, children, onOpenAutoFocus, ...props }, ref) => (
   <DialogPrimitive.Portal>
     <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80" />
     <DialogPrimitive.Content
       ref={ref}
+      tabIndex={-1}
+      onOpenAutoFocus={(e) => {
+        onOpenAutoFocus?.(e);
+        if (e.defaultPrevented) return;
+        // Radix auto-focuses the first focusable descendant, which is
+        // often a text input — that pops the mobile keyboard open
+        // immediately and covers the sheet before the user has even
+        // looked at it. Focus the sheet container itself instead.
+        e.preventDefault();
+        (e.target as HTMLElement)?.focus();
+      }}
       className={cn(sheetVariants({ side }), className)}
       {...props}
     >
