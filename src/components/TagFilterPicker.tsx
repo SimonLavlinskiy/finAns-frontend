@@ -29,7 +29,8 @@ export function TagFilterPicker({
 }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 0 });
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 0, maxHeight: 288 });
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
   const [expanded, setExpanded] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
@@ -45,18 +46,52 @@ export function TagFilterPicker({
   }, [open]);
 
   useEffect(() => {
-    if (open && ref.current) {
+    if (!open || !ref.current) return;
+
+    // Render inside the nearest open dialog/sheet (if any) instead of
+    // document.body — Radix's modal scroll-lock only allows touch
+    // scrolling within the dialog's own DOM subtree, so a portal
+    // straight to body would render an unscrollable menu on mobile.
+    const dialog = ref.current.closest('[role="dialog"]') as HTMLElement | null;
+    setPortalTarget(dialog ?? document.body);
+
+    const MAX_MENU_HEIGHT = 288; // max-h-72
+
+    function recalc() {
+      if (!ref.current) return;
       const r = ref.current.getBoundingClientRect();
+      const vv = window.visualViewport;
+      const viewportTop = vv?.offsetTop ?? 0;
+      const viewportHeight = vv?.height ?? window.innerHeight;
+      const viewportBottom = viewportTop + viewportHeight;
+
       const menuWidth = Math.max(r.width, 256);
-      const estimatedHeight = 288; // max-h-72
-      const spaceBelow = window.innerHeight - r.bottom;
-      const top =
-        spaceBelow < estimatedHeight && r.top > estimatedHeight
-          ? Math.max(8, r.top - estimatedHeight - 4)
-          : r.bottom + 4;
+      const spaceBelow = viewportBottom - r.bottom;
+      const spaceAbove = r.top - viewportTop;
+
+      let top: number;
+      let maxHeight: number;
+      if (spaceBelow >= 160 || spaceBelow >= spaceAbove) {
+        top = r.bottom + 4;
+        maxHeight = Math.min(MAX_MENU_HEIGHT, Math.max(120, spaceBelow - 12));
+      } else {
+        maxHeight = Math.min(MAX_MENU_HEIGHT, Math.max(120, spaceAbove - 12));
+        top = Math.max(viewportTop + 8, r.top - maxHeight - 4);
+      }
+
       const left = Math.min(r.left, window.innerWidth - menuWidth - 8);
-      setMenuPos({ top, left: Math.max(8, left), width: r.width });
+      setMenuPos({ top, left: Math.max(8, left), width: r.width, maxHeight });
     }
+
+    recalc();
+    window.addEventListener("resize", recalc);
+    window.visualViewport?.addEventListener("resize", recalc);
+    window.visualViewport?.addEventListener("scroll", recalc);
+    return () => {
+      window.removeEventListener("resize", recalc);
+      window.visualViewport?.removeEventListener("resize", recalc);
+      window.visualViewport?.removeEventListener("scroll", recalc);
+    };
   }, [open]);
 
   const selected = findTagById(tags, value ? Number(value) : null);
@@ -70,12 +105,13 @@ export function TagFilterPicker({
   const menu = open ? (
     <div
       id="tag-picker-menu"
-      className="fixed z-[200] bg-card border rounded-2xl shadow-lg p-2 max-h-72 overflow-y-auto pointer-events-auto"
-      onWheel={(e) => { e.currentTarget.scrollTop += e.deltaY; }}
+      className="fixed z-[200] bg-card border rounded-2xl shadow-lg p-2 overflow-y-auto overscroll-contain pointer-events-auto"
       style={{
         top: menuPos.top,
         left: menuPos.left,
         width: Math.max(menuPos.width, 256),
+        maxHeight: menuPos.maxHeight,
+        WebkitOverflowScrolling: "touch",
       }}
     >
       {!required && (
@@ -136,7 +172,7 @@ export function TagFilterPicker({
       ) : (
         button
       )}
-      {menu && createPortal(menu, document.body)}
+      {menu && createPortal(menu, portalTarget ?? document.body)}
     </div>
   );
 }
