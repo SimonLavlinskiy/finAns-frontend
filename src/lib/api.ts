@@ -17,6 +17,7 @@ import type {
   ProjectWithMembers,
   Tag,
   Transaction,
+  TransactionSuggestion,
   UpdatePlannedExpenseInput,
   User,
 } from "./types";
@@ -120,7 +121,7 @@ export function updateBalance(balance: number) {
 }
 
 export function fetchSuggestions(q: string) {
-  return apiClient<DataResponse<string[]>>(
+  return apiClient<DataResponse<TransactionSuggestion[]>>(
     `/api/v1/transactions/suggestions?q=${encodeURIComponent(q)}`,
   );
 }

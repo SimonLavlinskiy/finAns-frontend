@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { TagFormPicker } from "@/components/TagFilterPicker";
+import { TitleAutocomplete } from "@/components/TitleAutocomplete";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,7 @@ import {
 import { createTransaction, fetchTags, updateTransaction } from "@/lib/api";
 import { ApiError } from "@/lib/api-client";
 import { evaluateAmountExpression, parseRublesInput } from "@/lib/format";
-import type { CreateTransactionInput, Transaction } from "@/lib/types";
+import type { CreateTransactionInput, Transaction, TransactionSuggestion } from "@/lib/types";
 
 type Props = {
   open: boolean;
@@ -219,7 +220,19 @@ export function TransactionFormSheet({
             </Button>
           </div>
 
-          <Input placeholder="Наименование" value={title} onChange={(e) => setTitle(e.target.value)} data-testid="tx-title-input" />
+          <TitleAutocomplete
+            placeholder="Наименование"
+            value={title}
+            onChange={setTitle}
+            onSelectSuggestion={(s: TransactionSuggestion) => {
+              setTitle(s.title);
+              setAmount(String(s.amount / 100));
+              setTagId(String(s.tag_id));
+              setSpecificity(s.specificity);
+              setCategory(s.category);
+            }}
+            data-testid="tx-title-input"
+          />
           <Input
             placeholder="Сумма (можно ввести выражение: 378+567+844)"
             value={amount}

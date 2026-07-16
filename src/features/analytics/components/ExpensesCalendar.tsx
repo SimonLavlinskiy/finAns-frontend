@@ -35,6 +35,22 @@ function getDow(key: string): number {
   return new Date(key + "T00:00:00").getDay();
 }
 
+type BarState = "past" | "today" | "planned";
+
+/** Прошедший/текущий/планируемый столбец относительно сегодняшней даты. */
+function getBarState(item: { key: string; is_current: boolean }, level: CalendarLevel, now: Date): BarState {
+  if (item.is_current) return "today";
+  const parts = item.key.split("-").map(Number);
+  if (level === "day") {
+    const itemDate = new Date(parts[0], parts[1] - 1, parts[2]);
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return itemDate.getTime() < today.getTime() ? "past" : "planned";
+  }
+  const itemYearMonth = parts[0] * 12 + (parts[1] - 1);
+  const todayYearMonth = now.getFullYear() * 12 + now.getMonth();
+  return itemYearMonth < todayYearMonth ? "past" : "planned";
+}
+
 export function ExpensesCalendar() {
   const now = new Date();
   const [level, setLevel] = useState<CalendarLevel>("day");
@@ -190,6 +206,7 @@ export function ExpensesCalendar() {
             : undefined;
           const isActive = activeKey === item.key;
           const clickable = level === "month" || item.has_data;
+          const barState = getBarState(item, level, now);
           const label =
             level === "month" ? MONTH_SHORT[idx] : dayLabel(item.key).num;
           const sublabel = level === "day" ? dayLabel(item.key).weekday : "";
@@ -227,10 +244,10 @@ export function ExpensesCalendar() {
                   className={cn(
                     "absolute bottom-0 left-1/2 -translate-x-1/2 w-4 rounded-md transition-colors",
                     !item.has_data && "cursor-default",
-                    !item.has_data && !item.is_current && "bg-muted-foreground/15",
-                    !item.has_data && item.is_current && "bg-primary/40",
-                    item.has_data && item.is_current && "bg-primary",
-                    item.has_data && !item.is_current && "bg-muted-foreground/40 hover:bg-primary/60",
+                    barState === "past" && "bg-[var(--bar-past)] hover:bg-[var(--bar-past-hover)]",
+                    barState === "today" && "bg-[var(--bar-today)] hover:bg-[var(--bar-today-hover)]",
+                    barState === "planned" &&
+                      "bg-[var(--bar-planned-bg)] border-[1.5px] border-dashed border-[var(--bar-planned-border)] hover:bg-[var(--bar-planned-hover-bg)] hover:border-[var(--bar-planned-hover-border)]",
                   )}
                   style={{ height: item.has_data ? `${heightPct}%` : "6px" }}
                   onClick={(e) =>

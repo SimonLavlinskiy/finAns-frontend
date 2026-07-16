@@ -64,6 +64,14 @@ export type Balance = {
   total_expense: number;
 };
 
+export type TransactionSuggestion = {
+  title: string;
+  amount: number;
+  tag_id: number;
+  category: "expense" | "income";
+  specificity: "required" | "simple";
+};
+
 export type CreateTransactionInput = {
   title: string;
   amount: number;

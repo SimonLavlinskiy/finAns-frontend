@@ -27,6 +27,16 @@
     --expense: 0 72% 58%;
     --hero-from: 222 65% 19%;
     --hero-to: 216 30% 34%;
+
+    /* Календарь расходов: столбцы прошедшего/текущего/планируемого дня */
+    --bar-past: #C3C9D5;
+    --bar-past-hover: #8E98AB;
+    --bar-today: #E0C68F;
+    --bar-today-hover: #CBAD6B;
+    --bar-planned-bg: #FBF6EC;
+    --bar-planned-border: #E0C68F;
+    --bar-planned-hover-bg: #F4E9D2;
+    --bar-planned-hover-border: #CBAD6B;
   }
 
   * {
