@@ -22,7 +22,7 @@ import {
   deletePlannedExpense,
   fetchTags,
 } from "@/lib/api";
-import { formatDate, formatKopecks, parseRublesInput } from "@/lib/format";
+import { formatDate, formatRubles, parseRublesInput } from "@/lib/format";
 import { PRIORITY_DOT_COLORS } from "@/lib/planned-expenses";
 import { cn } from "@/lib/utils";
 import type { PlannedExpense } from "@/lib/types";
@@ -132,7 +132,7 @@ export function PlannedExpenseRow({
           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
             {item.cost_kopecks !== null && (
               <span className="text-xs opacity-80" style={{ color: textColor }}>
-                {formatKopecks(item.cost_kopecks)} ₽
+                {formatRubles(item.cost_kopecks)} ₽
               </span>
             )}
             {item.due_date && (

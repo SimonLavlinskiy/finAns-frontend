@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { CSSProperties } from "react";
-import { formatDate, formatKopecks } from "@/lib/format";
+import { formatDate, formatRubles } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { CalendarItem } from "@/lib/types";
 
@@ -38,7 +38,7 @@ export function CalendarDayPopup({
         />
       )}
       <p className="text-lg font-semibold font-mono">
-        {formatKopecks(item.amount)} ₽
+        {formatRubles(item.amount)} ₽
       </p>
       <p className="text-xs text-muted-foreground mb-3">
         {formatDate(item.key)}
@@ -93,7 +93,7 @@ export function CalendarDayPopup({
                   <span className="truncate">{b.name}</span>
                 </span>
                 <span className="font-mono text-xs whitespace-nowrap text-muted-foreground">
-                  {formatKopecks(b.amount)} ₽ · {b.percent.toFixed(1)}%
+                  {formatRubles(b.amount)} ₽ · {b.percent.toFixed(1)}%
                 </span>
               </li>
             ))}
@@ -108,7 +108,7 @@ export function CalendarDayPopup({
             >
               <span className="truncate">{t.title}</span>
               <span className="font-mono text-xs whitespace-nowrap text-muted-foreground">
-                {formatKopecks(t.amount)} ₽
+                {formatRubles(t.amount)} ₽
               </span>
             </li>
           ))}

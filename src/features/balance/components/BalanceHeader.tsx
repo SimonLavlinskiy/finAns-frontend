@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchBalance } from "@/lib/api";
-import { formatKopecks } from "@/lib/format";
+import { formatRubles } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 /** Компактный баланс для шапки на внутренних страницах */
@@ -22,7 +22,7 @@ export function BalanceHeader() {
     <div className="rounded-xl bg-muted/60 px-3 py-1.5 text-sm">
       <span className="text-muted-foreground mr-2">Баланс</span>
       <span className={cn("font-mono font-semibold", color)}>
-        {isLoading ? "…" : `${formatKopecks(balance)} ₽`}
+        {isLoading ? "…" : `${formatRubles(balance)} ₽`}
       </span>
     </div>
   );

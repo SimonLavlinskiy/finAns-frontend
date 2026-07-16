@@ -5,7 +5,7 @@ import type { CSSProperties, MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { CalendarDayPopup } from "@/features/analytics/components/CalendarDayPopup";
 import { fetchExpensesCalendar } from "@/lib/api";
-import { formatKopecks } from "@/lib/format";
+import { formatRubles } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { CalendarLevel } from "@/lib/types";
 
@@ -292,7 +292,7 @@ export function ExpensesCalendar() {
             <ChevronDown className="h-3.5 w-3.5" />
           </button>
           <p className="text-sm text-muted-foreground font-mono">
-            {formatKopecks(data.total)} ₽
+            {formatRubles(data.total)} ₽
           </p>
 
           {pickerOpen && (

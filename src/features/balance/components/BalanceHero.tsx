@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { fetchBalance, updateBalance } from "@/lib/api";
 import { ApiError } from "@/lib/api-client";
-import { formatKopecks, formatRubles, parseRublesInput } from "@/lib/format";
+import { formatRubles, parseRublesInput } from "@/lib/format";
 
 export function BalanceHero() {
   const qc = useQueryClient();
@@ -109,7 +109,7 @@ export function BalanceHero() {
                 Доходы
               </div>
               <p className="font-mono font-semibold text-lg">
-                {isLoading ? "…" : `+${formatKopecks(data?.total_income ?? 0)}`}
+                {isLoading ? "…" : `+${formatRubles(data?.total_income ?? 0)}`}
               </p>
             </div>
             <div className="rounded-2xl bg-white/10 backdrop-blur px-4 py-3 min-w-[140px]">
@@ -118,7 +118,7 @@ export function BalanceHero() {
                 Расходы
               </div>
               <p className="font-mono font-semibold text-lg">
-                {isLoading ? "…" : `−${formatKopecks(data?.total_expense ?? 0)}`}
+                {isLoading ? "…" : `−${formatRubles(data?.total_expense ?? 0)}`}
               </p>
             </div>
           </div>
@@ -150,12 +150,12 @@ export function BalanceHero() {
             <div className="rounded-xl bg-muted/60 px-3 py-2 text-sm space-y-1">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Сейчас</span>
-                <span className="font-mono">{formatKopecks(data.balance)} ₽</span>
+                <span className="font-mono">{formatRubles(data.balance)} ₽</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Доходы / расходы</span>
                 <span className="font-mono text-xs">
-                  +{formatKopecks(data.total_income)} / −{formatKopecks(data.total_expense)}
+                  +{formatRubles(data.total_income)} / −{formatRubles(data.total_expense)}
                 </span>
               </div>
             </div>
@@ -177,7 +177,7 @@ export function BalanceHero() {
           {preview != null && data && preview !== data.balance && (
             <div className="rounded-xl bg-primary/5 px-3 py-2 text-sm">
               <span className="text-muted-foreground">Сохранится: </span>
-              <span className="font-mono font-semibold">{formatKopecks(preview)} ₽</span>
+              <span className="font-mono font-semibold">{formatRubles(preview)} ₽</span>
             </div>
           )}
 

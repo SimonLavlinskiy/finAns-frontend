@@ -20,7 +20,7 @@ import {
   markMandatoryPaymentPaid,
   unmarkMandatoryPaymentPaid,
 } from "@/lib/api";
-import { formatDate, formatKopecks } from "@/lib/format";
+import { formatDate, formatRubles } from "@/lib/format";
 import { getDateHighlight, RECURRENCE_LABELS } from "@/lib/mandatory-payments";
 import { cn } from "@/lib/utils";
 import type { MandatoryPayment } from "@/lib/types";
@@ -80,7 +80,7 @@ export function MandatoryPaymentsPage() {
       header: "Сумма",
       cell: ({ row }) => (
         <span className="font-mono text-[hsl(var(--expense))]">
-          − {formatKopecks(row.original.amount)} ₽
+          − {formatRubles(row.original.amount)} ₽
         </span>
       ),
     },

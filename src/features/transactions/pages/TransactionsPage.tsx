@@ -29,7 +29,7 @@ import {
   fetchTags,
   fetchTransactions,
 } from "@/lib/api";
-import { formatDate, formatKopecks } from "@/lib/format";
+import { formatDate, formatRubles } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { Transaction } from "@/lib/types";
 
@@ -143,7 +143,7 @@ export function TransactionsPage() {
                 isExpense ? "text-[hsl(var(--expense))]" : "text-[hsl(var(--income))]",
               )}
             >
-              {isExpense ? "−" : "+"} {formatKopecks(row.original.amount)} ₽
+              {isExpense ? "−" : "+"} {formatRubles(row.original.amount)} ₽
             </span>
           );
         },
