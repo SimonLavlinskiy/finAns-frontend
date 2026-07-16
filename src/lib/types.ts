@@ -173,6 +173,7 @@ export type MandatoryPayment = {
   recurrence: MandatoryPaymentRecurrence;
   next_payment_date: string;
   last_paid_at: string | null;
+  is_paid_current_period: boolean;
   created_at: string;
   updated_at: string;
 };

@@ -1,9 +1,5 @@
 export type DateHighlight = "warn" | "normal";
 
-export function isCurrentlyPaid(lastPaidAt: string | null): boolean {
-  return lastPaidAt != null;
-}
-
 /**
  * Подсвечивает дату платежа тёплым жёлтым, если до неё ≤3 дней (включая сегодня).
  * Прошедшие даты — обычный цвет.

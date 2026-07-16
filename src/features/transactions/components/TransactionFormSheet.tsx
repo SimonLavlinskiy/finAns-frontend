@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { TagFormPicker } from "@/components/TagFilterPicker";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/sheet";
 import { createTransaction, fetchTags, updateTransaction } from "@/lib/api";
 import { ApiError } from "@/lib/api-client";
-import { parseRublesInput } from "@/lib/format";
+import { evaluateAmountExpression, parseRublesInput } from "@/lib/format";
 import type { CreateTransactionInput, Transaction } from "@/lib/types";
 
 type Props = {
@@ -219,8 +220,17 @@ export function TransactionFormSheet({
           </div>
 
           <Input placeholder="Наименование" value={title} onChange={(e) => setTitle(e.target.value)} data-testid="tx-title-input" />
-          <Input placeholder="Сумма" value={amount} onChange={(e) => setAmount(e.target.value)} data-testid="tx-amount-input" />
-          <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} data-testid="tx-date-input" />
+          <Input
+            placeholder="Сумма (можно ввести выражение: 378+567+844)"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            onBlur={() => {
+              const result = evaluateAmountExpression(amount);
+              if (result !== null) setAmount(String(result));
+            }}
+            data-testid="tx-amount-input"
+          />
+          <DatePicker value={date} onChange={setDate} data-testid="tx-date-input" />
 
           <TagFormPicker
             tags={tagsData ?? []}

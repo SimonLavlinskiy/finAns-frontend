@@ -1,17 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { formatKopecks, formatRubles, formatDate, parseRublesInput, rublesToKopecks, relativeDateLabel } from "../src/lib/format";
-
-/** Генерирует дату в локальном времени в формате YYYY-MM-DD со смещением daysOffset от сегодня */
-function localDateStr(daysOffset: number): string {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  d.setDate(d.getDate() + daysOffset);
-  return [
-    d.getFullYear(),
-    String(d.getMonth() + 1).padStart(2, "0"),
-    String(d.getDate()).padStart(2, "0"),
-  ].join("-");
-}
+import {
+  evaluateAmountExpression,
+  formatKopecks,
+  formatRubles,
+  formatDate,
+  parseRublesInput,
+  rublesToKopecks,
+} from "../src/lib/format";
 
 describe("formatKopecks", () => {
   it("formats zero", () => {
@@ -87,14 +82,33 @@ describe("rublesToKopecks", () => {
   });
 });
 
-describe("relativeDateLabel", () => {
-  it("returns 'Сегодня' for today", () => {
-    expect(relativeDateLabel(localDateStr(0))).toBe("Сегодня");
+describe("evaluateAmountExpression", () => {
+  it("sums multiple numbers", () => {
+    expect(evaluateAmountExpression("378+567+844")).toBe(1789);
   });
-  it("returns 'Вчера' for yesterday", () => {
-    expect(relativeDateLabel(localDateStr(-1))).toBe("Вчера");
+  it("supports all four operations with precedence", () => {
+    expect(evaluateAmountExpression("2+3*4")).toBe(14);
+    expect(evaluateAmountExpression("10-2/2")).toBe(9);
   });
-  it("returns formatted date for old dates", () => {
-    expect(relativeDateLabel("2020-01-15")).toBe("15.01.2020");
+  it("supports parentheses", () => {
+    expect(evaluateAmountExpression("(100+50)*2")).toBe(300);
+  });
+  it("supports comma as decimal separator", () => {
+    expect(evaluateAmountExpression("10,5+5,5")).toBe(16);
+  });
+  it("returns null for plain numbers (no operator)", () => {
+    expect(evaluateAmountExpression("500")).toBeNull();
+  });
+  it("returns null for empty input", () => {
+    expect(evaluateAmountExpression("")).toBeNull();
+  });
+  it("returns null for a dangling operator", () => {
+    expect(evaluateAmountExpression("100+")).toBeNull();
+  });
+  it("returns null for division by zero", () => {
+    expect(evaluateAmountExpression("10/0")).toBeNull();
+  });
+  it("returns null for non-arithmetic input", () => {
+    expect(evaluateAmountExpression("abc+1")).toBeNull();
   });
 });

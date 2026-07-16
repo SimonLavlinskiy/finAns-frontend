@@ -2,6 +2,7 @@ import { Check } from "lucide-react";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -179,16 +180,15 @@ function ModerationRowView({
       {/* Дата */}
       <TableCell>
         <FieldTooltip message={row.field_errors.date}>
-          <input
-            type="date"
+          <DatePicker
             value={row.date ?? ""}
+            onChange={(v) => {
+              if (v) onPatch(row.id, { date: v });
+            }}
             className={cn(
-              "h-9 rounded-xl border-2 bg-card px-2 text-sm",
+              "h-9 w-auto rounded-xl border-2 px-2 text-sm",
               fieldBorderClass(row, "date", !row.date),
             )}
-            onChange={(e) => {
-              if (e.target.value) onPatch(row.id, { date: e.target.value });
-            }}
           />
         </FieldTooltip>
       </TableCell>

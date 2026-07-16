@@ -9,6 +9,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MandatoryPaymentSheet } from "@/features/mandatory-payments/components/MandatoryPaymentSheet";
@@ -19,8 +20,8 @@ import {
   markMandatoryPaymentPaid,
   unmarkMandatoryPaymentPaid,
 } from "@/lib/api";
-import { formatKopecks } from "@/lib/format";
-import { getDateHighlight, isCurrentlyPaid, RECURRENCE_LABELS } from "@/lib/mandatory-payments";
+import { formatDate, formatKopecks } from "@/lib/format";
+import { getDateHighlight, RECURRENCE_LABELS } from "@/lib/mandatory-payments";
 import { cn } from "@/lib/utils";
 import type { MandatoryPayment } from "@/lib/types";
 
@@ -110,7 +111,7 @@ export function MandatoryPaymentsPage() {
                 "rounded-md px-2 py-0.5 bg-amber-50 text-amber-700 font-medium",
             )}
           >
-            {row.original.next_payment_date}
+            {formatDate(row.original.next_payment_date)}
           </span>
         );
       },
@@ -119,27 +120,15 @@ export function MandatoryPaymentsPage() {
       id: "paid",
       header: "",
       cell: ({ row }) => {
-        const paid = isCurrentlyPaid(row.original.last_paid_at);
-        if (paid) {
+        if (row.original.is_paid_current_period) {
           return (
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                className="rounded-xl bg-green-500 hover:bg-green-500 text-white cursor-default disabled:opacity-100 disabled:bg-green-500"
-                disabled
-              >
-                ✓ Оплачено
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="rounded-xl text-destructive hover:text-destructive text-xs"
-                disabled={unmarkPaidMutation.isPending}
-                onClick={() => unmarkPaidMutation.mutate(row.original.id)}
-              >
-                Отменить
-              </Button>
-            </div>
+            <Button
+              size="sm"
+              className="rounded-xl bg-green-500 hover:bg-green-500 text-white cursor-default disabled:opacity-100 disabled:bg-green-500"
+              disabled
+            >
+              ✓ Оплачено
+            </Button>
           );
         }
         return (
@@ -179,6 +168,19 @@ export function MandatoryPaymentsPage() {
             >
               Дублировать
             </DropdownMenuItem>
+            {row.original.is_paid_current_period && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive"
+                  disabled={unmarkPaidMutation.isPending}
+                  onClick={() => unmarkPaidMutation.mutate(row.original.id)}
+                >
+                  Отменить оплату
+                </DropdownMenuItem>
+              </>
+            )}
+            <DropdownMenuSeparator />
             <DropdownMenuItem
               className="text-destructive"
               onClick={() => {
@@ -237,9 +239,7 @@ export function MandatoryPaymentsPage() {
             columns={columns}
             data={rows}
             getRowClassName={(row) =>
-              isCurrentlyPaid(row.last_paid_at)
-                ? "opacity-60 bg-green-50/40"
-                : ""
+              row.is_paid_current_period ? "opacity-60 bg-green-50/40" : ""
             }
           />
         )}

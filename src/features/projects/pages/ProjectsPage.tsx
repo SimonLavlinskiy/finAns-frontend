@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ProjectCreateSheet } from "@/features/projects/components/ProjectCreateSheet";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { fetchProjects } from "@/lib/api";
+import { formatDate } from "@/lib/format";
 
 export function ProjectsPage() {
   const navigate = useNavigate();
@@ -81,7 +82,7 @@ export function ProjectsPage() {
                 <div className="min-w-0">
                   <p className="font-medium text-foreground truncate">{p.name}</p>
                   {p.started_at && (
-                    <p className="text-xs text-muted-foreground">С {p.started_at}</p>
+                    <p className="text-xs text-muted-foreground">С {formatDate(p.started_at)}</p>
                   )}
                 </div>
               </button>

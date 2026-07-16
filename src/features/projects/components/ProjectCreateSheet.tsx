@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import {
   Sheet,
@@ -70,11 +71,11 @@ export function ProjectCreateSheet({ open, onOpenChange, onCreated }: Props) {
             onChange={(e) => setBalance(e.target.value)}
             type="number"
           />
-          <Input
-            type="date"
+          <DatePicker
             value={startedAt}
-            onChange={(e) => setStartedAt(e.target.value)}
+            onChange={setStartedAt}
             placeholder="Дата начала учёта"
+            clearable
           />
           {error && <p className="text-sm text-destructive">{error}</p>}
           <Button

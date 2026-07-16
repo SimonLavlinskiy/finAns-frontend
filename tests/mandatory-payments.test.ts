@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getDateHighlight, isPaidThisPeriod } from "../src/lib/mandatory-payments";
+import { getDateHighlight } from "../src/lib/mandatory-payments";
 
 function dateOffset(days: number): string {
   const now = new Date();
@@ -7,23 +7,9 @@ function dateOffset(days: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-describe("isPaidThisPeriod", () => {
-  it("next_payment_date завтра → оплачено в этом периоде", () => {
-    expect(isPaidThisPeriod(dateOffset(1))).toBe(true);
-  });
-  it("next_payment_date через 30 дней → оплачено", () => {
-    expect(isPaidThisPeriod(dateOffset(30))).toBe(true);
-  });
-  it("next_payment_date сегодня → НЕ оплачено (кнопка активна)", () => {
-    expect(isPaidThisPeriod(dateOffset(0))).toBe(false);
-  });
-  it("next_payment_date вчера → НЕ оплачено (просрочен)", () => {
-    expect(isPaidThisPeriod(dateOffset(-1))).toBe(false);
-  });
-  it("next_payment_date в прошлом → НЕ оплачено", () => {
-    expect(isPaidThisPeriod(dateOffset(-30))).toBe(false);
-  });
-});
+// "Оплачено за текущий период" теперь вычисляется на бэкенде
+// (is_paid_current_period, см. mandatory_payment_service.go) и приходит с
+// ответом API — клиент больше не дублирует эту логику.
 
 describe("getDateHighlight", () => {
   it("сегодня → warn", () => expect(getDateHighlight(dateOffset(0))).toBe("warn"));

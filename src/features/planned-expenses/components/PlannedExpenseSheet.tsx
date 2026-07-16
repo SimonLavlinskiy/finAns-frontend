@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -188,11 +189,7 @@ export function PlannedExpenseSheet({
 
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Срок</label>
-            <Input
-              type="date"
-              value={f.dueDate}
-              onChange={(e) => set("dueDate")(e.target.value)}
-            />
+            <DatePicker value={f.dueDate} onChange={set("dueDate")} clearable />
           </div>
 
           <div className="space-y-1.5">

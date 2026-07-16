@@ -22,7 +22,7 @@ import {
   deletePlannedExpense,
   fetchTags,
 } from "@/lib/api";
-import { formatKopecks, parseRublesInput } from "@/lib/format";
+import { formatDate, formatKopecks, parseRublesInput } from "@/lib/format";
 import { PRIORITY_DOT_COLORS } from "@/lib/planned-expenses";
 import { cn } from "@/lib/utils";
 import type { PlannedExpense } from "@/lib/types";
@@ -145,7 +145,7 @@ export function PlannedExpenseRow({
                 )}
                 style={item.is_due_soon ? {} : { color: textColor }}
               >
-                {item.due_date}
+                {formatDate(item.due_date)}
               </span>
             )}
           </div>

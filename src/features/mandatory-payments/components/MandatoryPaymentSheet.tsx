@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { TagFormPicker } from "@/components/TagFilterPicker";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -212,11 +213,7 @@ export function MandatoryPaymentSheet({ open, onOpenChange, payment, onSaved }: 
 
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Дата платежа</label>
-            <Input
-              type="date"
-              value={nextPaymentDate}
-              onChange={(e) => setNextPaymentDate(e.target.value)}
-            />
+            <DatePicker value={nextPaymentDate} onChange={setNextPaymentDate} />
           </div>
 
           {formError && (
