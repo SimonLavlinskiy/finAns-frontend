@@ -237,3 +237,75 @@ export type UpdatePlannedExpenseInput = {
   priority?: "low" | "medium" | "high";
   category_id?: number | null;
 };
+
+export type FreedomIndexPoint = {
+  month: string;
+  simple_amount: number;
+  total_expense: number;
+  share: number | null;
+};
+
+export type FixedCostRatio = {
+  income: number;
+  mandatory_total: number;
+  ratio: number | null;
+};
+
+export type SankeyNode = { id: string; label: string };
+export type SankeyFlow = { from: string; to: string; amount: number };
+export type SankeyData = {
+  nodes: SankeyNode[];
+  flows: SankeyFlow[];
+  deficit_amount: number | null;
+};
+
+export type BalancePoint = { date: string; balance: number };
+export type BalanceForecast = {
+  current_balance: number;
+  history: BalancePoint[];
+  forecast: BalancePoint[];
+  zero_crossing_date: string | null;
+};
+
+export type SavingsGoal = {
+  planned_expense_id: number;
+  title: string;
+  cost: number;
+  projected_date: string | null;
+  already_affordable: boolean;
+};
+
+export type MoodDay = {
+  day: number;
+  simple_amount: number;
+  total_expense: number;
+  share: number | null;
+};
+
+export type Insight = { type: string; text: string };
+
+export type PeriodComparisonEntry = {
+  tag_id: number;
+  name: string;
+  current_amount: number;
+  comparison_amount: number;
+};
+
+export type SpendingLimit = {
+  id: number;
+  tag_id: number;
+  tag: { id: number; name: string; color: string; parent?: TagParent };
+  amount: number;
+  spent: number;
+  period_type: "month" | "week" | "custom";
+  period_start: string | null;
+  period_end: string | null;
+};
+
+export type CreateSpendingLimitInput = {
+  tag_id: number;
+  amount: number;
+  period_type: "month" | "week" | "custom";
+  period_start?: string | null;
+  period_end?: string | null;
+};

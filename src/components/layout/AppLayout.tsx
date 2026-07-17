@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeftRight,
+  BarChart3,
   Building2,
   CalendarClock,
   LogOut,
@@ -29,6 +30,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { to: "/transactions", label: "Операции", icon: ArrowLeftRight },
+  { to: "/analytics", label: "Аналитика", icon: BarChart3 },
   { to: "/import", label: "Импорт", icon: Upload },
   { to: "/mandatory-payments", label: "Регулярные платежи", icon: CalendarClock },
   { to: "/planned-expenses", label: "Хочу купить", icon: PiggyBank },

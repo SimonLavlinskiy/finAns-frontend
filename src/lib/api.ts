@@ -1,20 +1,30 @@
 import type {
   AcceptedTransaction,
   Balance,
+  BalanceForecast,
   CalendarLevel,
   CalendarResponse,
   CreateMandatoryPaymentInput,
   CreatePlannedExpenseInput,
+  CreateSpendingLimitInput,
   CreateTransactionInput,
+  FixedCostRatio,
+  FreedomIndexPoint,
   ImportBatchWithRows,
+  Insight,
   MandatoryPayment,
   ModerationRow,
+  MoodDay,
   PaginatedMeta,
+  PeriodComparisonEntry,
   PlannedExpense,
   PlannedExpenseCategoryWithItems,
   Project,
   ProjectMember,
   ProjectWithMembers,
+  SankeyData,
+  SavingsGoal,
+  SpendingLimit,
   Tag,
   Transaction,
   TransactionSuggestion,
@@ -280,6 +290,80 @@ export function fetchExpensesCalendar(
   return apiClient<DataResponse<CalendarResponse>>(
     `/api/v1/analytics/expenses-calendar?${params.toString()}`,
   );
+}
+
+export function fetchFreedomIndex(months = 12) {
+  return apiClient<DataResponse<FreedomIndexPoint[]>>(
+    `/api/v1/analytics/freedom-index?months=${months}`,
+  );
+}
+
+export function fetchFixedCostRatio(year: number, month: number) {
+  return apiClient<DataResponse<FixedCostRatio>>(
+    `/api/v1/analytics/fixed-cost-ratio?year=${year}&month=${month}`,
+  );
+}
+
+export function fetchIncomeExpenseSankey(
+  level: CalendarLevel,
+  year: number,
+  month?: number,
+) {
+  const params = new URLSearchParams({ level, year: String(year) });
+  if (month !== undefined) {
+    params.set("month", String(month));
+  }
+  return apiClient<DataResponse<SankeyData>>(
+    `/api/v1/analytics/income-expense-sankey?${params.toString()}`,
+  );
+}
+
+export function fetchBalanceForecast(days: 30 | 60 | 90) {
+  return apiClient<DataResponse<BalanceForecast>>(
+    `/api/v1/analytics/balance-forecast?days=${days}`,
+  );
+}
+
+export function fetchSavingsGoals() {
+  return apiClient<DataResponse<SavingsGoal[]>>("/api/v1/analytics/savings-goals");
+}
+
+export function fetchSpendingMoodCalendar(year: number, month: number) {
+  return apiClient<DataResponse<MoodDay[]>>(
+    `/api/v1/analytics/spending-mood-calendar?year=${year}&month=${month}`,
+  );
+}
+
+export function fetchInsights() {
+  return apiClient<DataResponse<Insight[]>>("/api/v1/analytics/insights");
+}
+
+export function fetchPeriodComparison(mode: "prev_month" | "prev_year") {
+  return apiClient<DataResponse<PeriodComparisonEntry[]>>(
+    `/api/v1/analytics/period-comparison?mode=${mode}`,
+  );
+}
+
+export function fetchSpendingLimits() {
+  return apiClient<DataResponse<SpendingLimit[]>>("/api/v1/spending-limits");
+}
+
+export function createSpendingLimit(payload: CreateSpendingLimitInput) {
+  return apiClient<DataResponse<SpendingLimit>>("/api/v1/spending-limits", {
+    method: "POST",
+    body: payload,
+  });
+}
+
+export function updateSpendingLimit(id: number, payload: CreateSpendingLimitInput) {
+  return apiClient<DataResponse<SpendingLimit>>(`/api/v1/spending-limits/${id}`, {
+    method: "PUT",
+    body: payload,
+  });
+}
+
+export function deleteSpendingLimit(id: number) {
+  return apiClient<void>(`/api/v1/spending-limits/${id}`, { method: "DELETE" });
 }
 
 export function fetchPlannedExpenseCategories() {
