@@ -13,11 +13,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MandatoryPaymentSheet } from "@/features/mandatory-payments/components/MandatoryPaymentSheet";
+import { MarkPaidConfirmSheet } from "@/features/mandatory-payments/components/MarkPaidConfirmSheet";
 import {
   deleteMandatoryPayment,
   duplicateMandatoryPayment,
   fetchMandatoryPayments,
-  markMandatoryPaymentPaid,
   unmarkMandatoryPaymentPaid,
 } from "@/lib/api";
 import { formatDate, formatRubles } from "@/lib/format";
@@ -28,22 +28,12 @@ import type { MandatoryPayment } from "@/lib/types";
 export function MandatoryPaymentsPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editing, setEditing] = useState<MandatoryPayment | null>(null);
+  const [markPaidTarget, setMarkPaidTarget] = useState<MandatoryPayment | null>(null);
   const qc = useQueryClient();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["mandatory-payments"],
     queryFn: async () => (await fetchMandatoryPayments()).data,
-  });
-
-  const markPaidMutation = useMutation({
-    mutationFn: (id: number) => markMandatoryPaymentPaid(id),
-    onSuccess: (res) => {
-      qc.setQueryData<MandatoryPayment[]>(["mandatory-payments"], (old) =>
-        old?.map((p) => (p.id === res.data.id ? res.data : p)) ?? [],
-      );
-      qc.invalidateQueries({ queryKey: ["transactions"] });
-      qc.invalidateQueries({ queryKey: ["balance"] });
-    },
   });
 
   const unmarkPaidMutation = useMutation({
@@ -136,8 +126,7 @@ export function MandatoryPaymentsPage() {
             size="sm"
             variant="outline"
             className="rounded-xl"
-            disabled={markPaidMutation.isPending}
-            onClick={() => markPaidMutation.mutate(row.original.id)}
+            onClick={() => setMarkPaidTarget(row.original)}
           >
             Оплатить
           </Button>
@@ -251,6 +240,13 @@ export function MandatoryPaymentsPage() {
         payment={editing}
         onSaved={() => {
           qc.invalidateQueries({ queryKey: ["mandatory-payments"] });
+        }}
+      />
+
+      <MarkPaidConfirmSheet
+        payment={markPaidTarget}
+        onOpenChange={(open) => {
+          if (!open) setMarkPaidTarget(null);
         }}
       />
     </div>

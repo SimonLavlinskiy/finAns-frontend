@@ -1,13 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { CalendarDayPopup } from "@/features/analytics/components/CalendarDayPopup";
-import { fetchExpensesCalendar } from "@/lib/api";
+import { MandatoryPaymentDayPopup } from "@/features/analytics/components/MandatoryPaymentDayPopup";
+import { fetchExpensesCalendar, fetchMandatoryPayments } from "@/lib/api";
 import { formatRubles } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import type { CalendarLevel } from "@/lib/types";
+import type { CalendarLevel, MandatoryPayment } from "@/lib/types";
 
 const MONTH_NAMES = [
   "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
@@ -88,6 +89,21 @@ export function ExpensesCalendar() {
         .data,
     placeholderData: (prev) => prev,
   });
+
+  const { data: mandatoryPayments } = useQuery({
+    queryKey: ["mandatory-payments"],
+    queryFn: async () => (await fetchMandatoryPayments()).data,
+  });
+
+  const mandatoryPaymentsByDate = useMemo(() => {
+    const map = new Map<string, MandatoryPayment[]>();
+    for (const p of mandatoryPayments ?? []) {
+      const list = map.get(p.next_payment_date) ?? [];
+      list.push(p);
+      map.set(p.next_payment_date, list);
+    }
+    return map;
+  }, [mandatoryPayments]);
 
   useEffect(() => {
     if (!activeKey && !pickerOpen) return;
@@ -207,6 +223,10 @@ export function ExpensesCalendar() {
           const isActive = activeKey === item.key;
           const clickable = level === "month" || item.has_data;
           const barState = getBarState(item, level, now);
+          const dayMandatoryPayments =
+            level === "day" && barState === "planned"
+              ? mandatoryPaymentsByDate.get(item.key)
+              : undefined;
           const label =
             level === "month" ? MONTH_SHORT[idx] : dayLabel(item.key).num;
           const sublabel = level === "day" ? dayLabel(item.key).weekday : "";
@@ -233,7 +253,7 @@ export function ExpensesCalendar() {
               )}
               onMouseEnter={(e) => {
                 cancelClose();
-                if (level === "day" && item.has_data) openPopup(e, item.key);
+                if (level === "day" && (item.has_data || dayMandatoryPayments)) openPopup(e, item.key);
               }}
               onMouseLeave={() => scheduleClose(item.key)}
             >
@@ -247,7 +267,11 @@ export function ExpensesCalendar() {
                     barState === "past" && "bg-[var(--bar-past)] hover:bg-[var(--bar-past-hover)]",
                     barState === "today" && "bg-[var(--bar-today)] hover:bg-[var(--bar-today-hover)]",
                     barState === "planned" &&
+                      !dayMandatoryPayments &&
                       "bg-[var(--bar-planned-bg)] border-[1.5px] border-dashed border-[var(--bar-planned-border)] hover:bg-[var(--bar-planned-hover-bg)] hover:border-[var(--bar-planned-hover-border)]",
+                    barState === "planned" &&
+                      dayMandatoryPayments &&
+                      "bg-[var(--bar-planned-bg)] border-[1.5px] border-solid border-[hsl(var(--primary))] hover:bg-[var(--bar-planned-hover-bg)]",
                   )}
                   style={{ height: item.has_data ? `${heightPct}%` : "6px" }}
                   onClick={(e) =>
@@ -265,6 +289,16 @@ export function ExpensesCalendar() {
               {isActive && level === "day" && item.has_data && (
                 <CalendarDayPopup
                   item={item}
+                  style={popupStyle}
+                  arrowLeft={popupArrow}
+                  onMouseEnter={cancelClose}
+                  onMouseLeave={() => scheduleClose(item.key)}
+                />
+              )}
+              {isActive && level === "day" && !item.has_data && dayMandatoryPayments && (
+                <MandatoryPaymentDayPopup
+                  payments={dayMandatoryPayments}
+                  dateKey={item.key}
                   style={popupStyle}
                   arrowLeft={popupArrow}
                   onMouseEnter={cancelClose}

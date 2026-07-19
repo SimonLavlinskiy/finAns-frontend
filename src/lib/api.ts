@@ -264,10 +264,10 @@ export function duplicateMandatoryPayment(id: number) {
   );
 }
 
-export function markMandatoryPaymentPaid(id: number) {
+export function markMandatoryPaymentPaid(id: number, payload?: { amount?: number }) {
   return apiClient<DataResponse<MandatoryPayment>>(
     `/api/v1/mandatory-payments/${id}/mark-paid`,
-    { method: "POST" },
+    { method: "POST", body: payload },
   );
 }
 
