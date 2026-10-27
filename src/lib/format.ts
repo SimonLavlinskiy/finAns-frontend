@@ -13,6 +13,44 @@ export function formatRubles(kopecks: number): string {
   }).format(Math.round(kopecks / 100));
 }
 
+const NBSP = "\u00A0";
+const MINUS = "\u2212";
+
+/**
+ * Сумма для раздела «Аналитика»: рубли без копеек, разряды и «₽» через
+ * неразрывный пробел, минус — типографский «−» (U+2212). Пример: `−1 511 ₽`.
+ * sign: "auto" — минус только у отрицательных, "always" — «+» у положительных,
+ * "none" — без знака (модуль).
+ */
+export function formatMoney(kopecks: number, opts: { sign?: "auto" | "always" | "none" } = {}): string {
+  const sign = opts.sign ?? "auto";
+  const rub = Math.round(kopecks / 100);
+  const digits = String(Math.abs(rub)).replace(/\B(?=(\d{3})+(?!\d))/g, NBSP);
+  let prefix = "";
+  if (rub < 0 && sign !== "none") prefix = MINUS;
+  else if (rub > 0 && sign === "always") prefix = "+";
+  return `${prefix}${digits}${NBSP}₽`;
+}
+
+/** Процент от дохода: round(x / I × 100); при I = 0 — «—». */
+export function formatPercentOf(x: number, base: number): string {
+  if (base === 0) return "—";
+  return `${Math.round((x / base) * 100)}%`;
+}
+
+/**
+ * Разбирает ввод суммы в рублях (число или выражение «100+200») в копейки.
+ * Пустая строка — null; некорректный или отрицательный ввод — NaN.
+ */
+export function parseAmountInput(value: string): number | null {
+  const trimmed = value.trim();
+  if (trimmed === "") return null;
+  const expr = evaluateAmountExpression(trimmed);
+  const rub = expr ?? Number(trimmed.replace(/\s/g, "").replace(",", "."));
+  if (!isFinite(rub) || rub < 0) return NaN;
+  return rublesToKopecks(rub);
+}
+
 export function formatDate(dateStr: string): string {
   const [y, m, d] = dateStr.split("-");
   return `${d}.${m}.${y}`;

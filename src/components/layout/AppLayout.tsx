@@ -144,7 +144,7 @@ export function AppLayout() {
           <div className="flex-1 min-w-0 flex flex-col gap-5">
             {/* Mobile header */}
             <header className="flex items-center justify-between gap-3 md:hidden">
-              <div className="flex items-center gap-2">
+              <div className="flex shrink-0 items-center gap-2">
                 <Button
                   variant="ghost"
                   size="icon"
@@ -157,13 +157,15 @@ export function AppLayout() {
                 </Button>
                 <p className="font-bold text-lg">finAnns</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex min-w-0 items-center justify-end gap-2">
                 <HealthStatus />
-                <BalanceHeader />
+                <div className="min-w-0 truncate">
+                  <BalanceHeader />
+                </div>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded-full"
+                  className="h-8 w-8 shrink-0 rounded-full"
                   title="Выйти"
                   onClick={handleLogout}
                 >

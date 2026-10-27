@@ -10,7 +10,22 @@ export type DropdownMenuPos = { top: number; left: number; width: number; maxHei
  * поддерева, так что портал прямо в body рендерил бы несворачиваемое меню
  * на мобильных.
  */
-export function useDropdownPosition(open: boolean, anchorRef: RefObject<HTMLElement>, maxMenuHeight = 288) {
+export type DropdownPositionOptions = {
+  /** Зазор между кнопкой и меню, px. */
+  gap?: number;
+  /** Открывать в сторону, где больше места (иначе — вниз, если снизу ≥ 160 px). */
+  preferLargerSide?: boolean;
+  /** Минимальная ширина меню, px. */
+  minWidth?: number;
+};
+
+export function useDropdownPosition(
+  open: boolean,
+  anchorRef: RefObject<HTMLElement>,
+  maxMenuHeight = 288,
+  options: DropdownPositionOptions = {},
+) {
+  const { gap = 4, preferLargerSide = false, minWidth = 256 } = options;
   const [menuPos, setMenuPos] = useState<DropdownMenuPos>({ top: 0, left: 0, width: 0, maxHeight: maxMenuHeight });
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
 
@@ -28,18 +43,19 @@ export function useDropdownPosition(open: boolean, anchorRef: RefObject<HTMLElem
       const viewportHeight = vv?.height ?? window.innerHeight;
       const viewportBottom = viewportTop + viewportHeight;
 
-      const menuWidth = Math.max(r.width, 256);
+      const menuWidth = Math.max(r.width, minWidth);
       const spaceBelow = viewportBottom - r.bottom;
       const spaceAbove = r.top - viewportTop;
 
       let top: number;
       let maxHeight: number;
-      if (spaceBelow >= 160 || spaceBelow >= spaceAbove) {
-        top = r.bottom + 4;
-        maxHeight = Math.min(maxMenuHeight, Math.max(120, spaceBelow - 12));
+      const openBelow = preferLargerSide ? spaceBelow >= spaceAbove : spaceBelow >= 160 || spaceBelow >= spaceAbove;
+      if (openBelow) {
+        top = r.bottom + gap;
+        maxHeight = Math.min(maxMenuHeight, Math.max(120, spaceBelow - gap - 8));
       } else {
-        maxHeight = Math.min(maxMenuHeight, Math.max(120, spaceAbove - 12));
-        top = Math.max(viewportTop + 8, r.top - maxHeight - 4);
+        maxHeight = Math.min(maxMenuHeight, Math.max(120, spaceAbove - gap - 8));
+        top = Math.max(viewportTop + 8, r.top - maxHeight - gap);
       }
 
       const left = Math.min(r.left, window.innerWidth - menuWidth - 8);
@@ -55,7 +71,7 @@ export function useDropdownPosition(open: boolean, anchorRef: RefObject<HTMLElem
       window.visualViewport?.removeEventListener("resize", recalc);
       window.visualViewport?.removeEventListener("scroll", recalc);
     };
-  }, [open, anchorRef, maxMenuHeight]);
+  }, [open, anchorRef, maxMenuHeight, gap, preferLargerSide, minWidth]);
 
   return { menuPos, portalTarget };
 }

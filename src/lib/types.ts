@@ -33,10 +33,16 @@ export type PaginatedMeta = {
 
 export type TagParent = { id: number; name: string; color?: string };
 
+export type TagKind = "expense" | "income";
+
 export type Tag = {
   id: number;
   name: string;
   color: string;
+  kind?: TagKind;
+  order?: number;
+  created_at?: string;
+  deleted_at?: string | null;
   parent_id?: number | null;
   parent?: TagParent;
   children?: Tag[];
@@ -294,6 +300,7 @@ export type PeriodComparisonEntry = {
 export type SpendingLimit = {
   id: number;
   tag_id: number;
+  category_id: number;
   tag: { id: number; name: string; color: string; parent?: TagParent };
   amount: number;
   spent: number;
@@ -308,4 +315,57 @@ export type CreateSpendingLimitInput = {
   period_type: "month" | "week" | "custom";
   period_start?: string | null;
   period_end?: string | null;
+};
+
+// --- Раздел «Аналитика» v2 ---
+
+export type MonthSubcategory = {
+  subcategory_id: number | null;
+  amount: number;
+  all_mandatory: boolean;
+};
+
+export type MonthCategory = {
+  category_id: number;
+  amount: number;
+  subcategories: MonthSubcategory[];
+};
+
+export type MonthSummary = {
+  month: string; // YYYY-MM
+  is_current: boolean;
+  today: number | null;
+  days_in_month: number;
+  income: number;
+  expense: number;
+  categories: MonthCategory[];
+};
+
+export type YearMonth = {
+  month: string; // YYYY-MM
+  income: number;
+  expense: number;
+  is_current: boolean;
+};
+
+export type YearSummary = {
+  year: number;
+  months: YearMonth[];
+};
+
+export type AnalyticsRange = {
+  first_month: string | null;
+  current_month: string;
+  today: string; // YYYY-MM-DD
+  years: number[];
+};
+
+export type PlannerIncome = { name: string; amount: number | null };
+
+export type Planner = {
+  days: number | null;
+  incomes: PlannerIncome[];
+  payment_overrides: Record<string, number>;
+  plans: Record<string, number>;
+  updated_at?: string | null;
 };

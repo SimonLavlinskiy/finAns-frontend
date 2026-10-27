@@ -1,5 +1,10 @@
 import type {
   AcceptedTransaction,
+  AnalyticsRange,
+  MonthSummary,
+  Planner,
+  TagKind,
+  YearSummary,
   Balance,
   BalanceForecast,
   CalendarLevel,
@@ -93,19 +98,20 @@ export function duplicateTransaction(id: number) {
   );
 }
 
-export function fetchTags() {
-  return apiClient<DataResponse<Tag[]>>("/api/v1/tags");
+export function fetchTags(opts: { includeDeleted?: boolean } = {}) {
+  return apiClient<DataResponse<Tag[]>>(`/api/v1/tags${opts.includeDeleted ? "?include_deleted=true" : ""}`);
 }
 
 export function createTag(body: {
   name: string;
   color: string;
   parent_id?: number | null;
+  kind?: TagKind;
 }) {
   return apiClient<DataResponse<Tag>>("/api/v1/tags", { method: "POST", body });
 }
 
-export function updateTag(id: number, body: { name: string; color: string }) {
+export function updateTag(id: number, body: { name: string; color: string; kind?: TagKind; order?: number }) {
   return apiClient<DataResponse<Tag>>(`/api/v1/tags/${id}`, {
     method: "PUT",
     body,
@@ -364,6 +370,37 @@ export function updateSpendingLimit(id: number, payload: CreateSpendingLimitInpu
 
 export function deleteSpendingLimit(id: number) {
   return apiClient<void>(`/api/v1/spending-limits/${id}`, { method: "DELETE" });
+}
+
+export function upsertCategoryLimit(categoryId: number, amount: number) {
+  return apiClient<DataResponse<SpendingLimit>>(`/api/v1/spending-limits/by-category/${categoryId}`, {
+    method: "PUT",
+    body: { amount },
+  });
+}
+
+export function deleteCategoryLimit(categoryId: number) {
+  return apiClient<void>(`/api/v1/spending-limits/by-category/${categoryId}`, { method: "DELETE" });
+}
+
+export function fetchAnalyticsRange() {
+  return apiClient<DataResponse<AnalyticsRange>>("/api/v1/analytics/range");
+}
+
+export function fetchMonthSummary(month: string) {
+  return apiClient<DataResponse<MonthSummary>>(`/api/v1/analytics/month?month=${month}`);
+}
+
+export function fetchYearSummary(year: number) {
+  return apiClient<DataResponse<YearSummary>>(`/api/v1/analytics/year?year=${year}`);
+}
+
+export function fetchPlanner() {
+  return apiClient<DataResponse<Planner>>("/api/v1/planner");
+}
+
+export function savePlanner(body: Omit<Planner, "updated_at">) {
+  return apiClient<DataResponse<Planner>>("/api/v1/planner", { method: "PUT", body });
 }
 
 export function fetchPlannedExpenseCategories() {

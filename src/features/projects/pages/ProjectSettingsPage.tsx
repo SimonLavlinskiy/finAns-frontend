@@ -28,12 +28,14 @@ type TagFormState = {
   name: string;
   color: string;
   parentId: string;
+  income: boolean;
 };
 
 const emptyForm = (): TagFormState => ({
   name: "",
   color: TAG_COLORS[0],
   parentId: "none",
+  income: false,
 });
 
 function rootTagsOnly(tags: Tag[], excludeId?: number): Tag[] {
@@ -94,6 +96,7 @@ export function ProjectSettingsPage() {
         name: tagForm.name,
         color: tagForm.color,
         parent_id: tagForm.parentId === "none" ? null : Number(tagForm.parentId),
+        kind: tagForm.income ? "income" : "expense",
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["tags"] });
@@ -104,7 +107,12 @@ export function ProjectSettingsPage() {
   });
 
   const updateTagMut = useMutation({
-    mutationFn: () => updateTag(editTag!.id, { name: tagForm.name, color: tagForm.color }),
+    mutationFn: () =>
+      updateTag(editTag!.id, {
+        name: tagForm.name,
+        color: tagForm.color,
+        ...(editTag!.parent_id ? {} : { kind: tagForm.income ? "income" : "expense" }),
+      }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["tags"] });
       setEditTag(null);
@@ -135,6 +143,7 @@ export function ProjectSettingsPage() {
       name: tag.name,
       color: tag.color,
       parentId: tag.parent_id ? String(tag.parent_id) : "none",
+      income: tag.kind === "income",
     });
   }
 
@@ -233,7 +242,12 @@ export function ProjectSettingsPage() {
                 onAddSubtag={() => openCreateTag(tag.id)}
                 onEdit={openEditTag}
                 onDelete={(id) => {
-                  if (confirm("Удалить категорию и подкатегории?")) deleteTagMut.mutate(id);
+                  if (
+                    confirm(
+                      "Удалить категорию и подкатегории? Операции сохранятся и останутся в аналитике прошлых месяцев, лимит категории будет удалён.",
+                    )
+                  )
+                    deleteTagMut.mutate(id);
                 }}
               />
             ))}
@@ -425,6 +439,18 @@ function TagFormFields({
             ))}
           </SelectContent>
         </Select>
+      )}
+      {!isSubtag && form.parentId === "none" && (
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            className="h-4 w-4 accent-[hsl(var(--primary))]"
+            checked={form.income}
+            onChange={(e) => setForm({ ...form, income: e.target.checked })}
+          />
+          Доходная категория
+          <span className="text-xs text-muted-foreground">(не участвует в расходах и лимитах аналитики)</span>
+        </label>
       )}
       <div className="flex gap-2 flex-wrap">
         {isSubtag ? (
